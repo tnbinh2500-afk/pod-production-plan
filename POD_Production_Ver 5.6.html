@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POD Production & Financial Plan V5.6</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1280px; margin: 0 auto; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .grid { display: grid; gap: 1rem; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+        @media (min-width: 768px) {
+            .md-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+            .md-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+            .md-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+            .md-grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+            .md-p-8 { padding: 2rem; }
+        }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-1 { gap: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .ml-4 { margin-left: 1rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .pb-2 { padding-bottom: 0.5rem; }
+        .pb-3 { padding-bottom: 0.75rem; }
+        .pt-2 { padding-top: 0.5rem; }
+        .rounded { border-radius: 0.375rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .border { border: 1px solid #e5e7eb; }
+        .border-2 { border: 2px solid; }
+        .border-b { border-bottom: 1px solid #e5e7eb; }
+        .border-t { border-top: 1px solid #e5e7eb; }
+        .border-l-4 { border-left: 4px solid; }
+        .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+        .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .w-full { width: 100%; }
+        .w-6 { width: 1.5rem; }
+        .w-8 { width: 2rem; }
+        .h-6 { height: 1.5rem; }
+        .h-8 { height: 2rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-gray-900 { color: #111827; }
+        .text-indigo-600 { color: #4f46e5; }
+        .text-indigo-900 { color: #312e81; }
+        .text-purple-600 { color: #9333ea; }
+        .text-purple-900 { color: #581c87; }
+        .text-green-600 { color: #16a34a; }
+        .text-green-900 { color: #14532d; }
+        .text-red-600 { color: #dc2626; }
+        .text-blue-900 { color: #1e3a8a; }
+        .text-amber-900 { color: #78350f; }
+        .text-orange-600 { color: #ea580c; }
+        .text-orange-900 { color: #7c2d12; }
+        .text-yellow-900 { color: #713f12; }
+        .bg-white { background-color: #ffffff; }
+        .bg-indigo-50 { background-color: #eef2ff; }
+        .bg-indigo-100 { background-color: #e0e7ff; }
+        .bg-purple-50 { background-color: #faf5ff; }
+        .bg-green-50 { background-color: #f0fdf4; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-amber-50 { background-color: #fffbeb; }
+        .bg-orange-50 { background-color: #fff7ed; }
+        .bg-yellow-50 { background-color: #fefce8; }
+        .bg-pink-50 { background-color: #fdf2f8; }
+        .bg-pink-100 { background-color: #fce7f3; }
+        .bg-emerald-50 { background-color: #ecfdf5; }
+        .bg-cyan-50 { background-color: #ecfeff; }
+        .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+        .from-green-50 { --tw-gradient-from: #f0fdf4; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(240, 253, 244, 0)); }
+        .to-emerald-100 { --tw-gradient-to: #d1fae5; }
+        .from-purple-50 { --tw-gradient-from: #faf5ff; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(250, 245, 255, 0)); }
+        .to-pink-100 { --tw-gradient-to: #fce7f3; }
+        .border-indigo-200 { border-color: #c7d2fe; }
+        .border-purple-200 { border-color: #e9d5ff; }
+        .border-green-200 { border-color: #bbf7d0; }
+        .border-blue-200 { border-color: #bfdbfe; }
+        .border-orange-200 { border-color: #fed7aa; }
+        .border-yellow-200 { border-color: #fef08a; }
+        .border-green-500 { border-color: #22c55e; }
+        .border-blue-500 { border-color: #3b82f6; }
+        .border-amber-500 { border-color: #f59e0b; }
+        .border-purple-500 { border-color: #a855f7; }
+        .block { display: block; }
+        select, input { 
+            padding: 0.75rem;
+            border: 2px solid #c7d2fe;
+            border-radius: 0.5rem;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+        select:focus, input:focus { border-color: #4f46e5; }
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+        .space-y-1 > * + * { margin-top: 0.25rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .price-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            display: inline-block;
+        }
+        .inventory-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .inventory-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .order-timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .order-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #667eea;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+        /* Thêm style cho các input số */
+        .number-input {
+            padding: 0.5rem;
+            border: 1px solid #c7d2fe;
+            border-radius: 0.375rem;
+            width: 100%;
+            text-align: center;
+        }
+        .number-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        /* Button styles */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        /* Sensitivity analysis styles */
+        .sensitivity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .sensitivity-table th,
+        .sensitivity-table td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+        .sensitivity-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        .sensitivity-table tr:hover {
+            background-color: #f3f4f6;
+        }
+        .positive { color: #16a34a; }
+        .negative { color: #dc2626; }
+        .neutral { color: #6b7280; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+
+        const Icons = {
+            Calculator: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect width="20" height="20" x="2" y="2" rx="2"/>
+                    <line x1="7" x2="17" y1="7" y2="7"/>
+                    <line x1="7" x2="17" y1="17" y2="17"/>
+                    <line x1="7" x2="17" y1="10" y2="10"/>
+                    <line x1="7" x2="17" y1="14" y2="14"/>
+                </svg>
+            ),
+            DollarSign: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" x2="12" y1="2" y2="22"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            ),
+            Settings: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            ),
+            TrendingUp: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                </svg>
+            ),
+            BarChart: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" x2="12" y1="20" y2="10"/>
+                    <line x1="18" x2="18" y1="20" y2="4"/>
+                    <line x1="6" x2="6" y1="20" y2="16"/>
+                </svg>
+            ),
+            Package: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="m7.5 4.27 9 5.15"/>
+                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                    <path d="M3.3 7 12 12l8.7-5"/>
+                    <path d="M12 22V12"/>
+                </svg>
+            ),
+            Calendar: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" x2="16" y1="2" y2="6"/>
+                    <line x1="8" x2="8" y1="2" y2="6"/>
+                    <line x1="3" x2="21" y1="10" y2="10"/>
+                </svg>
+            ),
+            Users: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            ),
+            Refresh: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                    <path d="M21 3v5h-5"/>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                    <path d="M3 21v-5h5"/>
+                </svg>
+            )
+        };
+
+        // Default values
+        const DEFAULT_VALUES = {
+            scenario: 'low',
+            materialCostMultiplier: 1.0,
+            laborWage: 18,
+            rentPerSqFtPerMonth: 2.0,
+            factorySquareFeet: 10000,
+            acquisitionCostPercent: 10,
+            defectRatePercent: 3,
+            priceCustomOrnament: 3.0,
+            priceFixedOrnament: 2.5,
+            priceSublimation: 4.5,
+            priceApparel: 6.25,
+            pricePaper: 2.0,
+            scenarioData: {
+                low: {
+                    name: 'Low Season',
+                    customShapeUnits: 5000,
+                    fixedShapeUnits: 1000,
+                    sublimationUnits: 5000,
+                    apparelUnits: 1500,
+                    paperUnits: 5000,
+                    uvPrinters: 4,
+                    daysPerYear: 240
+                },
+                smallpeak: {
+                    name: 'Small Peaks',
+                    customShapeUnits: 7500,
+                    fixedShapeUnits: 3000,
+                    sublimationUnits: 5000,
+                    apparelUnits: 1500,
+                    paperUnits: 7000,
+                    uvPrinters: 7,
+                    daysPerYear: 45
+                },
+                mothers: {
+                    name: 'Mother\'s Day Q2',
+                    customShapeUnits: 10000,
+                    fixedShapeUnits: 5000,
+                    sublimationUnits: 5000,
+                    apparelUnits: 1500,
+                    paperUnits: 9000,
+                    uvPrinters: 10,
+                    daysPerYear: 30
+                },
+                christmas: {
+                    name: 'Christmas Q4',
+                    customShapeUnits: 25000,
+                    fixedShapeUnits: 5000,
+                    sublimationUnits: 9000,
+                    apparelUnits: 1500,
+                    paperUnits: 9000,
+                    uvPrinters: 20,
+                    daysPerYear: 50
+                }
+            }
+        };
+
+        function ProductionPlan() {
+            const [scenario, setScenario] = useState(DEFAULT_VALUES.scenario);
+            const [materialCostMultiplier, setMaterialCostMultiplier] = useState(DEFAULT_VALUES.materialCostMultiplier);
+            const [laborWage, setLaborWage] = useState(DEFAULT_VALUES.laborWage);
+            const [rentPerSqFtPerMonth, setRentPerSqFtPerMonth] = useState(DEFAULT_VALUES.rentPerSqFtPerMonth);
+            const [factorySquareFeet, setFactorySquareFeet] = useState(DEFAULT_VALUES.factorySquareFeet);
+            const [acquisitionCostPercent, setAcquisitionCostPercent] = useState(DEFAULT_VALUES.acquisitionCostPercent);
+            const [defectRatePercent, setDefectRatePercent] = useState(DEFAULT_VALUES.defectRatePercent);
+            
+            // Price ranges for each product
+            const [priceCustomOrnament, setPriceCustomOrnament] = useState(DEFAULT_VALUES.priceCustomOrnament);
+            const [priceFixedOrnament, setPriceFixedOrnament] = useState(DEFAULT_VALUES.priceFixedOrnament);
+            const [priceSublimation, setPriceSublimation] = useState(DEFAULT_VALUES.priceSublimation);
+            const [priceApparel, setPriceApparel] = useState(DEFAULT_VALUES.priceApparel);
+            const [pricePaper, setPricePaper] = useState(DEFAULT_VALUES.pricePaper);
+            
+            // Editable scenario data
+            const [scenarioData, setScenarioData] = useState(DEFAULT_VALUES.scenarioData);
+            
+            const current = scenarioData[scenario];
+            
+            // Reset to default function
+            const resetToDefault = () => {
+                setScenario(DEFAULT_VALUES.scenario);
+                setMaterialCostMultiplier(DEFAULT_VALUES.materialCostMultiplier);
+                setLaborWage(DEFAULT_VALUES.laborWage);
+                setRentPerSqFtPerMonth(DEFAULT_VALUES.rentPerSqFtPerMonth);
+                setFactorySquareFeet(DEFAULT_VALUES.factorySquareFeet);
+                setAcquisitionCostPercent(DEFAULT_VALUES.acquisitionCostPercent);
+                setDefectRatePercent(DEFAULT_VALUES.defectRatePercent);
+                setPriceCustomOrnament(DEFAULT_VALUES.priceCustomOrnament);
+                setPriceFixedOrnament(DEFAULT_VALUES.priceFixedOrnament);
+                setPriceSublimation(DEFAULT_VALUES.priceSublimation);
+                setPriceApparel(DEFAULT_VALUES.priceApparel);
+                setPricePaper(DEFAULT_VALUES.pricePaper);
+                setScenarioData(JSON.parse(JSON.stringify(DEFAULT_VALUES.scenarioData)));
+            };
+            
+            // Handle scenario data changes
+            const handleScenarioDataChange = (scenarioKey, field, value) => {
+                setScenarioData(prev => ({
+                    ...prev,
+                    [scenarioKey]: {
+                        ...prev[scenarioKey],
+                        [field]: Number(value)
+                    }
+                }));
+            };
+            
+            // Calculations with useMemo for better performance
+            const calculations = useMemo(() => {
+                const totalOrnaments = current.customShapeUnits + current.fixedShapeUnits;
+                const laserMachines = Math.round(current.uvPrinters / 2);
+                
+                const sublimationPrinters = Math.ceil(current.sublimationUnits / 600);
+                const heatPresses = Math.ceil(current.sublimationUnits / 400);
+                const dtfPrinters = Math.ceil(current.apparelUnits / 250);
+                const apparelHeatPresses = Math.ceil(current.apparelUnits / 175);
+                const digitalPresses = Math.ceil(current.paperUnits / 4000);
+                const paperCutters = Math.ceil(current.paperUnits / 3000);
+                
+                const totalUnitsPerDay = totalOrnaments + current.sublimationUnits + current.apparelUnits + current.paperUnits;
+                
+                const ornamentOperators = Math.ceil((current.uvPrinters + laserMachines) / 2.5);
+                const sublimationOperators = Math.ceil((sublimationPrinters + heatPresses) / 2);
+                const apparelOperators = Math.ceil((dtfPrinters + apparelHeatPresses) / 1.5);
+                const paperOperators = Math.ceil((digitalPresses + paperCutters) / 1.5);
+                
+                const totalOperators = ornamentOperators + sublimationOperators + apparelOperators + paperOperators;
+                const qcStaff = Math.ceil(totalUnitsPerDay / 2000);
+                const packingStaff = Math.ceil(totalUnitsPerDay / 1000);
+                const supervisors = Math.ceil((totalOperators + qcStaff + packingStaff) / 10);
+                const totalStaffPerShift = totalOperators + qcStaff + packingStaff + supervisors;
+                
+                return {
+                    totalOrnaments,
+                    laserMachines,
+                    sublimationPrinters,
+                    heatPresses,
+                    dtfPrinters,
+                    apparelHeatPresses,
+                    digitalPresses,
+                    paperCutters,
+                    totalUnitsPerDay,
+                    factorySquareFeet,
+                    ornamentOperators,
+                    sublimationOperators,
+                    apparelOperators,
+                    paperOperators,
+                    totalOperators,
+                    qcStaff,
+                    packingStaff,
+                    supervisors,
+                    totalStaffPerShift,
+                    
+                    equipmentRequirements: {
+                        uvPrinters: current.uvPrinters,
+                        laserCutters: laserMachines,
+                        sublimationPrinters: sublimationPrinters,
+                        heatPresses: heatPresses,
+                        dtfPrinters: dtfPrinters,
+                        apparelHeatPresses: apparelHeatPresses,
+                        digitalPresses: digitalPresses,
+                        paperCutters: paperCutters
+                    },
+                    
+                    laborRequirements: {
+                        ornamentOperators: ornamentOperators,
+                        sublimationOperators: sublimationOperators,
+                        apparelOperators: apparelOperators,
+                        paperOperators: paperOperators,
+                        totalOperators: totalOperators,
+                        qcStaff: qcStaff,
+                        packingStaff: packingStaff,
+                        supervisors: supervisors,
+                        totalStaffPerShift: totalStaffPerShift
+                    }
+                };
+            }, [current, factorySquareFeet]);
+            
+            // Selling prices from individual price sliders
+            const sellingPrices = {
+                customOrnament: priceCustomOrnament,
+                fixedOrnament: priceFixedOrnament,
+                sublimation: priceSublimation,
+                apparel: priceApparel,
+                paper: pricePaper
+            };
+            
+            // Daily and Annual Revenue
+            const dailyRevenue = (
+                current.customShapeUnits * sellingPrices.customOrnament +
+                current.fixedShapeUnits * sellingPrices.fixedOrnament +
+                current.sublimationUnits * sellingPrices.sublimation +
+                current.apparelUnits * sellingPrices.apparel +
+                current.paperUnits * sellingPrices.paper
+            );
+            
+            const annualRevenue = dailyRevenue * current.daysPerYear;
+            
+            // Material Costs
+            const baseUnitCosts = {
+                customOrnament: 2.0,
+                fixedOrnament: 1.55,
+                sublimation: 3.5,
+                apparel: 6.5,
+                paper: 0.95
+            };
+            
+            const unitCosts = {
+                customOrnament: baseUnitCosts.customOrnament * materialCostMultiplier,
+                fixedOrnament: baseUnitCosts.fixedOrnament * materialCostMultiplier,
+                sublimation: baseUnitCosts.sublimation * materialCostMultiplier,
+                apparel: baseUnitCosts.apparel * materialCostMultiplier,
+                paper: baseUnitCosts.paper * materialCostMultiplier
+            };
+            
+            const dailyMaterialCost = (
+                current.customShapeUnits * unitCosts.customOrnament +
+                current.fixedShapeUnits * unitCosts.fixedOrnament +
+                current.sublimationUnits * unitCosts.sublimation +
+                current.apparelUnits * unitCosts.apparel +
+                current.paperUnits * unitCosts.paper
+            );
+            
+            const defectCost = dailyMaterialCost * (defectRatePercent / 100);
+            const totalDailyMaterialCost = dailyMaterialCost + defectCost;
+            const annualMaterialCost = totalDailyMaterialCost * current.daysPerYear;
+            
+            const acquisitionCost = annualRevenue * (acquisitionCostPercent / 100);
+            
+            const dailyGrossProfit = dailyRevenue - totalDailyMaterialCost;
+            const annualGrossProfit = dailyGrossProfit * current.daysPerYear;
+            const grossMargin = annualRevenue > 0 ? (annualGrossProfit / annualRevenue * 100).toFixed(1) : '0.0';
+            
+            // Rent calculation: monthly rent * 12 months
+            const annualRent = factorySquareFeet * rentPerSqFtPerMonth * 12;
+            
+            const equipmentCosts = {
+                uvPrinter: 35000,
+                laserCutter: 45000,
+                sublimationPrinter: 5000,
+                heatPress: 2000,
+                apparelHeatPress: 2500,
+                dtfPrinter: 15000,
+                digitalPress: 80000,
+                paperCutter: 8000
+            };
+            
+            const totalEquipmentCost = (
+                current.uvPrinters * equipmentCosts.uvPrinter +
+                calculations.laserMachines * equipmentCosts.laserCutter +
+                calculations.sublimationPrinters * equipmentCosts.sublimationPrinter +
+                calculations.heatPresses * equipmentCosts.heatPress +
+                calculations.dtfPrinters * equipmentCosts.dtfPrinter +
+                calculations.apparelHeatPresses * equipmentCosts.apparelHeatPress +
+                calculations.digitalPresses * equipmentCosts.digitalPress +
+                calculations.paperCutters * equipmentCosts.paperCutter
+            );
+            
+            const equipmentDepreciation = totalEquipmentCost / 5;
+            
+            const shiftsPerDay = scenario === 'christmas' ? 2.5 : scenario === 'mothers' ? 2 : scenario === 'smallpeak' ? 1.5 : 1;
+            const dailyLaborCost = calculations.totalStaffPerShift * shiftsPerDay * 8 * laborWage;
+            const annualLaborCost = dailyLaborCost * current.daysPerYear;
+            
+            const utilities = (annualRent + annualLaborCost) * 0.15;
+            
+            const totalAnnualOperatingCost = annualRent + equipmentDepreciation + annualLaborCost + utilities + acquisitionCost;
+            
+            const annualNetProfit = annualGrossProfit - totalAnnualOperatingCost;
+            const netMargin = annualRevenue > 0 ? (annualNetProfit / annualRevenue * 100).toFixed(1) : '0.0';
+            
+            const totalAnnualCost = annualMaterialCost + totalAnnualOperatingCost;
+            const costPerUnit = calculations.totalUnitsPerDay * current.daysPerYear > 0 ? 
+                totalAnnualCost / (calculations.totalUnitsPerDay * current.daysPerYear) : 0;
+            
+            const dailyRevenuePerUnit = dailyRevenue / calculations.totalUnitsPerDay;
+            const breakEvenUnits = dailyRevenuePerUnit > 0 ? totalAnnualCost / dailyRevenuePerUnit : 0;
+            const breakEvenDays = calculations.totalUnitsPerDay > 0 ? breakEvenUnits / calculations.totalUnitsPerDay : 0;
+            
+            // FIXED: Inventory Planning - Tính theo lead time chuẩn bị cho mùa đó
+            const inventoryPlan = useMemo(() => {
+                const daysToOrder = 120; // 4 tháng lead time
+                const safetyStockDays = 30; // Thêm 30 ngày dự phòng
+                const totalDaysInventory = daysToOrder + safetyStockDays; // 150 ngày tổng
+                
+                // Calculate order deadline
+                const orderDeadlineDate = new Date();
+                orderDeadlineDate.setDate(orderDeadlineDate.getDate() + daysToOrder);
+                
+                return {
+                    customShape: {
+                        dailyProduction: current.customShapeUnits,
+                        blanksNeeded: Math.round(current.customShapeUnits * totalDaysInventory),
+                        costPerBlank: unitCosts.customOrnament * 0.6,
+                        totalCost: Math.round(current.customShapeUnits * totalDaysInventory * unitCosts.customOrnament * 0.6),
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
+                    },
+                    fixedShape: {
+                        dailyProduction: current.fixedShapeUnits,
+                        blanksNeeded: Math.round(current.fixedShapeUnits * totalDaysInventory),
+                        costPerBlank: unitCosts.fixedOrnament * 0.6,
+                        totalCost: Math.round(current.fixedShapeUnits * totalDaysInventory * unitCosts.fixedOrnament * 0.6),
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
+                    },
+                    sublimation: {
+                        dailyProduction: current.sublimationUnits,
+                        blanksNeeded: Math.round(current.sublimationUnits * totalDaysInventory),
+                        costPerBlank: unitCosts.sublimation * 0.7,
+                        totalCost: Math.round(current.sublimationUnits * totalDaysInventory * unitCosts.sublimation * 0.7),
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
+                    },
+                    apparel: {
+                        dailyProduction: current.apparelUnits,
+                        garmentsNeeded: Math.round(current.apparelUnits * totalDaysInventory),
+                        costPerGarment: unitCosts.apparel * 0.7,
+                        totalCost: Math.round(current.apparelUnits * totalDaysInventory * unitCosts.apparel * 0.7),
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
+                    },
+                    paper: {
+                        dailyProduction: current.paperUnits,
+                        paperStockNeeded: Math.round(current.paperUnits * totalDaysInventory),
+                        costPerSheet: unitCosts.paper * 0.8,
+                        totalCost: Math.round(current.paperUnits * totalDaysInventory * unitCosts.paper * 0.8),
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
+                    },
+                    summary: {
+                        totalInventoryValue: 0,
+                        totalBlanksNeeded: 0,
+                        leadTime: "4 months (120 days) + 30 days safety stock",
+                        orderDeadline: `Must order by ${orderDeadlineDate.toLocaleDateString()} for ${current.name} season`
+                    }
+                };
+            }, [current, unitCosts, materialCostMultiplier]);
+            
+            // Calculate total inventory value
+            inventoryPlan.summary.totalInventoryValue = 
+                inventoryPlan.customShape.totalCost +
+                inventoryPlan.fixedShape.totalCost +
+                inventoryPlan.sublimation.totalCost +
+                inventoryPlan.apparel.totalCost +
+                inventoryPlan.paper.totalCost;
+            
+            inventoryPlan.summary.totalBlanksNeeded = 
+                inventoryPlan.customShape.blanksNeeded +
+                inventoryPlan.fixedShape.blanksNeeded +
+                inventoryPlan.sublimation.blanksNeeded +
+                inventoryPlan.apparel.garmentsNeeded +
+                inventoryPlan.paper.paperStockNeeded;
+            
+            // Blended analysis calculations
+            const blendedData = useMemo(() => {
+                const allScenarios = ['low', 'smallpeak', 'mothers', 'christmas'];
+                let totalAnnualRevenueBlended = 0;
+                let totalAnnualMaterialCostBlended = 0;
+                let totalAnnualUnitsBlended = 0;
+                let totalAnnualOperatingCostBlended = 0;
+                
+                allScenarios.forEach(key => {
+                    const s = scenarioData[key];
+                    const units = s.customShapeUnits + s.fixedShapeUnits + s.sublimationUnits + s.apparelUnits + s.paperUnits;
+                    const rev = (
+                        s.customShapeUnits * sellingPrices.customOrnament +
+                        s.fixedShapeUnits * sellingPrices.fixedOrnament +
+                        s.sublimationUnits * sellingPrices.sublimation +
+                        s.apparelUnits * sellingPrices.apparel +
+                        s.paperUnits * sellingPrices.paper
+                    ) * s.daysPerYear;
+                    
+                    const matCost = (
+                        s.customShapeUnits * unitCosts.customOrnament +
+                        s.fixedShapeUnits * unitCosts.fixedOrnament +
+                        s.sublimationUnits * unitCosts.sublimation +
+                        s.apparelUnits * unitCosts.apparel +
+                        s.paperUnits * unitCosts.paper
+                    ) * s.daysPerYear;
+                    
+                    const defCost = matCost * (defectRatePercent / 100);
+                    const totalMatCost = matCost + defCost;
+                    
+                    const acqCost = rev * (acquisitionCostPercent / 100);
+                    
+                    const laserMach = Math.round(s.uvPrinters / 2);
+                    const subPrint = Math.ceil(s.sublimationUnits / 600);
+                    const heatPress = Math.ceil(s.sublimationUnits / 400);
+                    const dtfPrint = Math.ceil(s.apparelUnits / 250);
+                    const appHeatPress = Math.ceil(s.apparelUnits / 175);
+                    const digPress = Math.ceil(s.paperUnits / 4000);
+                    const paperCut = Math.ceil(s.paperUnits / 3000);
+                    
+                    const equipCost = (
+                        s.uvPrinters * equipmentCosts.uvPrinter +
+                        laserMach * equipmentCosts.laserCutter +
+                        subPrint * equipmentCosts.sublimationPrinter +
+                        heatPress * equipmentCosts.heatPress +
+                        dtfPrint * equipmentCosts.dtfPrinter +
+                        appHeatPress * equipmentCosts.apparelHeatPress +
+                        digPress * equipmentCosts.digitalPress +
+                        paperCut * equipmentCosts.paperCutter
+                    ) / 5;
+                    
+                    const ornamentOps = Math.ceil((s.uvPrinters + laserMach) / 2.5);
+                    const sublimationOps = Math.ceil((subPrint + heatPress) / 2);
+                    const apparelOps = Math.ceil((dtfPrint + appHeatPress) / 1.5);
+                    const paperOps = Math.ceil((digPress + paperCut) / 1.5);
+                    const totalOps = ornamentOps + sublimationOps + apparelOps + paperOps;
+                    const qc = Math.ceil(units / 2000);
+                    const pack = Math.ceil(units / 1000);
+                    const sup = Math.ceil((totalOps + qc + pack) / 10);
+                    const staff = totalOps + qc + pack + sup;
+                    
+                    const shifts = key === 'christmas' ? 2.5 : key === 'mothers' ? 2 : key === 'smallpeak' ? 1.5 : 1;
+                    const labor = staff * shifts * 8 * laborWage * s.daysPerYear;
+                    
+                    const rent = factorySquareFeet * rentPerSqFtPerMonth * 12;
+                    const utils = (rent + labor) * 0.15;
+                    
+                    totalAnnualRevenueBlended += rev;
+                    totalAnnualMaterialCostBlended += totalMatCost;
+                    totalAnnualUnitsBlended += units * s.daysPerYear;
+                    totalAnnualOperatingCostBlended += rent + equipCost + labor + utils + acqCost;
+                });
+                
+                const blendedAnnualGrossProfit = totalAnnualRevenueBlended - totalAnnualMaterialCostBlended;
+                const blendedAnnualNetProfit = blendedAnnualGrossProfit - totalAnnualOperatingCostBlended;
+                const blendedGrossMargin = totalAnnualRevenueBlended > 0 ? 
+                    (blendedAnnualGrossProfit / totalAnnualRevenueBlended * 100).toFixed(1) : '0.0';
+                const blendedNetMargin = totalAnnualRevenueBlended > 0 ? 
+                    (blendedAnnualNetProfit / totalAnnualRevenueBlended * 100).toFixed(1) : '0.0';
+                
+                return {
+                    totalAnnualRevenueBlended,
+                    totalAnnualMaterialCostBlended,
+                    totalAnnualUnitsBlended,
+                    totalAnnualOperatingCostBlended,
+                    blendedAnnualGrossProfit,
+                    blendedAnnualNetProfit,
+                    blendedGrossMargin,
+                    blendedNetMargin
+                };
+            }, [priceCustomOrnament, priceFixedOrnament, priceSublimation, priceApparel, pricePaper, 
+                materialCostMultiplier, laborWage, rentPerSqFtPerMonth, factorySquareFeet, 
+                acquisitionCostPercent, defectRatePercent, scenarioData]);
+
+            // Sensitivity Analysis
+            const sensitivityAnalysis = useMemo(() => {
+                const baseNetProfit = annualNetProfit;
+                const scenarios = [];
+                
+                // Test different price scenarios
+                const priceChanges = [-10, -5, 0, 5, 10];
+                priceChanges.forEach(change => {
+                    const newPriceCustomOrnament = priceCustomOrnament * (1 + change/100);
+                    const newPriceFixedOrnament = priceFixedOrnament * (1 + change/100);
+                    const newPriceSublimation = priceSublimation * (1 + change/100);
+                    const newPriceApparel = priceApparel * (1 + change/100);
+                    const newPricePaper = pricePaper * (1 + change/100);
+                    
+                    const newDailyRevenue = (
+                        current.customShapeUnits * newPriceCustomOrnament +
+                        current.fixedShapeUnits * newPriceFixedOrnament +
+                        current.sublimationUnits * newPriceSublimation +
+                        current.apparelUnits * newPriceApparel +
+                        current.paperUnits * newPricePaper
+                    );
+                    
+                    const newAnnualRevenue = newDailyRevenue * current.daysPerYear;
+                    const newAnnualGrossProfit = newAnnualRevenue - annualMaterialCost;
+                    const newAnnualNetProfit = newAnnualGrossProfit - totalAnnualOperatingCost;
+                    const profitChange = ((newAnnualNetProfit - baseNetProfit) / Math.abs(baseNetProfit) * 100).toFixed(1);
+                    
+                    scenarios.push({
+                        variable: 'Price Change',
+                        change: `${change}%`,
+                        netProfit: newAnnualNetProfit,
+                        profitChange: profitChange,
+                        type: 'price'
+                    });
+                });
+                
+                // Test different material cost scenarios
+                const materialCostChanges = [-10, -5, 0, 5, 10];
+                materialCostChanges.forEach(change => {
+                    const newMultiplier = materialCostMultiplier * (1 + change/100);
+                    const newUnitCosts = {
+                        customOrnament: baseUnitCosts.customOrnament * newMultiplier,
+                        fixedOrnament: baseUnitCosts.fixedOrnament * newMultiplier,
+                        sublimation: baseUnitCosts.sublimation * newMultiplier,
+                        apparel: baseUnitCosts.apparel * newMultiplier,
+                        paper: baseUnitCosts.paper * newMultiplier
+                    };
+                    
+                    const newDailyMaterialCost = (
+                        current.customShapeUnits * newUnitCosts.customOrnament +
+                        current.fixedShapeUnits * newUnitCosts.fixedOrnament +
+                        current.sublimationUnits * newUnitCosts.sublimation +
+                        current.apparelUnits * newUnitCosts.apparel +
+                        current.paperUnits * newUnitCosts.paper
+                    );
+                    
+                    const newDefectCost = newDailyMaterialCost * (defectRatePercent / 100);
+                    const newTotalDailyMaterialCost = newDailyMaterialCost + newDefectCost;
+                    const newAnnualMaterialCost = newTotalDailyMaterialCost * current.daysPerYear;
+                    
+                    const newAnnualGrossProfit = annualRevenue - newAnnualMaterialCost;
+                    const newAnnualNetProfit = newAnnualGrossProfit - totalAnnualOperatingCost;
+                    const profitChange = ((newAnnualNetProfit - baseNetProfit) / Math.abs(baseNetProfit) * 100).toFixed(1);
+                    
+                    scenarios.push({
+                        variable: 'Material Cost',
+                        change: `${change}%`,
+                        netProfit: newAnnualNetProfit,
+                        profitChange: profitChange,
+                        type: 'cost'
+                    });
+                });
+                
+                // Test different volume scenarios
+                const volumeChanges = [-20, -10, 0, 10, 20];
+                volumeChanges.forEach(change => {
+                    const newCustomShapeUnits = current.customShapeUnits * (1 + change/100);
+                    const newFixedShapeUnits = current.fixedShapeUnits * (1 + change/100);
+                    const newSublimationUnits = current.sublimationUnits * (1 + change/100);
+                    const newApparelUnits = current.apparelUnits * (1 + change/100);
+                    const newPaperUnits = current.paperUnits * (1 + change/100);
+                    
+                    const newDailyRevenue = (
+                        newCustomShapeUnits * priceCustomOrnament +
+                        newFixedShapeUnits * priceFixedOrnament +
+                        newSublimationUnits * priceSublimation +
+                        newApparelUnits * priceApparel +
+                        newPaperUnits * pricePaper
+                    );
+                    
+                    const newAnnualRevenue = newDailyRevenue * current.daysPerYear;
+                    
+                    const newDailyMaterialCost = (
+                        newCustomShapeUnits * unitCosts.customOrnament +
+                        newFixedShapeUnits * unitCosts.fixedOrnament +
+                        newSublimationUnits * unitCosts.sublimation +
+                        newApparelUnits * unitCosts.apparel +
+                        newPaperUnits * unitCosts.paper
+                    );
+                    
+                    const newDefectCost = newDailyMaterialCost * (defectRatePercent / 100);
+                    const newTotalDailyMaterialCost = newDailyMaterialCost + newDefectCost;
+                    const newAnnualMaterialCost = newTotalDailyMaterialCost * current.daysPerYear;
+                    
+                    const newAnnualGrossProfit = newAnnualRevenue - newAnnualMaterialCost;
+                    
+                    // Recalculate operating costs for new volume
+                    const newTotalUnitsPerDay = newCustomShapeUnits + newFixedShapeUnits + newSublimationUnits + newApparelUnits + newPaperUnits;
+                    const newUvPrinters = Math.ceil(newCustomShapeUnits / 1250); // Rough estimate
+                    const newLaserMachines = Math.round(newUvPrinters / 2);
+                    
+                    const newSublimationPrinters = Math.ceil(newSublimationUnits / 600);
+                    const newHeatPresses = Math.ceil(newSublimationUnits / 400);
+                    const newDtfPrinters = Math.ceil(newApparelUnits / 250);
+                    const newApparelHeatPresses = Math.ceil(newApparelUnits / 175);
+                    const newDigitalPresses = Math.ceil(newPaperUnits / 4000);
+                    const newPaperCutters = Math.ceil(newPaperUnits / 3000);
+                    
+                    const newOrnamentOperators = Math.ceil((newUvPrinters + newLaserMachines) / 2.5);
+                    const newSublimationOperators = Math.ceil((newSublimationPrinters + newHeatPresses) / 2);
+                    const newApparelOperators = Math.ceil((newDtfPrinters + newApparelHeatPresses) / 1.5);
+                    const newPaperOperators = Math.ceil((newDigitalPresses + newPaperCutters) / 1.5);
+                    const newTotalOperators = newOrnamentOperators + newSublimationOperators + newApparelOperators + newPaperOperators;
+                    const newQcStaff = Math.ceil(newTotalUnitsPerDay / 2000);
+                    const newPackingStaff = Math.ceil(newTotalUnitsPerDay / 1000);
+                    const newSupervisors = Math.ceil((newTotalOperators + newQcStaff + newPackingStaff) / 10);
+                    const newTotalStaffPerShift = newTotalOperators + newQcStaff + newPackingStaff + newSupervisors;
+                    
+                    const newEquipmentCost = (
+                        newUvPrinters * equipmentCosts.uvPrinter +
+                        newLaserMachines * equipmentCosts.laserCutter +
+                        newSublimationPrinters * equipmentCosts.sublimationPrinter +
+                        newHeatPresses * equipmentCosts.heatPress +
+                        newDtfPrinters * equipmentCosts.dtfPrinter +
+                        newApparelHeatPresses * equipmentCosts.apparelHeatPress +
+                        newDigitalPresses * equipmentCosts.digitalPress +
+                        newPaperCutters * equipmentCosts.paperCutter
+                    ) / 5;
+                    
+                    const newDailyLaborCost = newTotalStaffPerShift * shiftsPerDay * 8 * laborWage;
+                    const newAnnualLaborCost = newDailyLaborCost * current.daysPerYear;
+                    const newUtilities = (annualRent + newAnnualLaborCost) * 0.15;
+                    const newAcquisitionCost = newAnnualRevenue * (acquisitionCostPercent / 100);
+                    
+                    const newTotalAnnualOperatingCost = annualRent + newEquipmentCost + newAnnualLaborCost + newUtilities + newAcquisitionCost;
+                    const newAnnualNetProfit = newAnnualGrossProfit - newTotalAnnualOperatingCost;
+                    const profitChange = ((newAnnualNetProfit - baseNetProfit) / Math.abs(baseNetProfit) * 100).toFixed(1);
+                    
+                    scenarios.push({
+                        variable: 'Production Volume',
+                        change: `${change}%`,
+                        netProfit: newAnnualNetProfit,
+                        profitChange: profitChange,
+                        type: 'volume'
+                    });
+                });
+                
+                return {
+                    baseNetProfit,
+                    scenarios: scenarios.slice(0, 15) // Limit to 15 scenarios
+                };
+            }, [current, priceCustomOrnament, priceFixedOrnament, priceSublimation, priceApparel, pricePaper,
+                materialCostMultiplier, annualRevenue, annualMaterialCost, totalAnnualOperatingCost,
+                defectRatePercent, laborWage, annualRent, acquisitionCostPercent]);
+
+            const formatNumber = (num) => {
+                if (!num && num !== 0) return '0';
+                const absNum = Math.abs(num);
+                if (absNum >= 1000000) {
+                    return (num / 1000000).toFixed(2) + 'M';
+                } else if (absNum >= 1000) {
+                    return (num / 1000).toFixed(0) + 'K';
+                }
+                return Math.round(num).toLocaleString('en-US');
+            };
+
+            const formatCurrency = (num) => {
+                return `$${formatNumber(num)}`;
+            };
+
+            const getColorClass = (value) => value > 0 ? 'text-green-600' : 'text-red-600';
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md-p-8">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header with Reset Button */}
+                        <div className="glass-card p-6 md-p-8 mb-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 text-indigo-600"><Icons.Calculator /></div>
+                                    <h1 className="text-2xl text-3xl font-bold text-gray-800">POD Production & Financial Plan V5.6</h1>
+                                </div>
+                                <button 
+                                    onClick={resetToDefault}
+                                    className="btn btn-secondary"
+                                >
+                                    <Icons.Refresh />
+                                    Reset to Default
+                                </button>
+                            </div>
+                            
+                            <div className="mb-6">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Select Production Scenario</label>
+                                <select 
+                                    value={scenario}
+                                    onChange={(e) => setScenario(e.target.value)}
+                                    className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none text-base"
+                                >
+                                    <option value="low">Low Season (240 days)</option>
+                                    <option value="smallpeak">Small Peaks (45 days)</option>
+                                    <option value="mothers">Mother's Day Q2 (30 days)</option>
+                                    <option value="christmas">Christmas Q4 (50 days)</option>
+                                </select>
+                            </div>
+
+                            {/* Editable Production Volume */}
+                            <div className="bg-indigo-50 rounded-lg p-4 mb-6">
+                                <h3 className="font-semibold text-indigo-900 mb-3">📊 Customize Production Volume - {current.name}</h3>
+                                <div className="grid grid-cols-2 md-grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Custom Ornaments (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.customShapeUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'customShapeUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Fixed Ornaments (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.fixedShapeUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'fixedShapeUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Sublimation (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.sublimationUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'sublimationUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Apparel (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.apparelUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'apparelUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Paper Products (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.paperUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'paperUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">UV Printers Needed</label>
+                                        <input
+                                            type="number"
+                                            value={current.uvPrinters}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'uvPrinters', e.target.value)}
+                                            min="0"
+                                            step="1"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-indigo-50 rounded-lg p-4">
+                                <h3 className="font-semibold text-indigo-900 mb-3">{current.name} - {current.daysPerYear} days/year</h3>
+                                <div className="grid grid-cols-2 md-grid-cols-3 gap-3 text-sm">
+                                    <div className="bg-white rounded p-3">
+                                        <span className="text-gray-600 block">Custom Ornaments:</span>
+                                        <span className="font-bold text-indigo-900 text-lg">{current.customShapeUnits.toLocaleString()}/day</span>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <span className="text-gray-600 block">Fixed Ornaments:</span>
+                                        <span className="font-bold text-indigo-900 text-lg">{current.fixedShapeUnits.toLocaleString()}/day</span>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <span className="text-gray-600 block">Sublimation:</span>
+                                        <span className="font-bold text-indigo-900 text-lg">{current.sublimationUnits.toLocaleString()}/day</span>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <span className="text-gray-600 block">Apparel:</span>
+                                        <span className="font-bold text-indigo-900 text-lg">{current.apparelUnits.toLocaleString()}/day</span>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <span className="text-gray-600 block">Paper Products:</span>
+                                        <span className="font-bold text-indigo-900 text-lg">{current.paperUnits.toLocaleString()}/day</span>
+                                    </div>
+                                    <div className="bg-indigo-100 rounded p-3">
+                                        <span className="text-gray-600 block">Total Volume:</span>
+                                        <span className="font-bold text-indigo-900 text-xl">{calculations.totalUnitsPerDay.toLocaleString()}/day</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Price Controls */}
+                        <div className="glass-card p-6 md-p-8 mb-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 text-purple-600"><Icons.DollarSign /></div>
+                                <h2 className="text-xl text-2xl font-bold text-gray-800">Product Pricing Controls</h2>
+                            </div>
+
+                            <div className="grid md-grid-cols-2 lg:grid-cols-5 gap-6">
+                                <div className="bg-purple-50 rounded-lg p-4">
+                                    <h3 className="font-semibold text-purple-900 mb-3">Custom Ornaments</h3>
+                                    <div className="mb-2">
+                                        <span className="price-tag">${priceCustomOrnament.toFixed(2)}</span>
+                                        <span className="text-xs text-gray-600 ml-2">per unit</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="1.5" 
+                                        max="8" 
+                                        step="0.1"
+                                        value={priceCustomOrnament}
+                                        onChange={(e) => setPriceCustomOrnament(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$1.5</span>
+                                        <span>$8</span>
+                                    </div>
+                                    <div className="text-sm text-gray-700 mt-2">
+                                        <span className="font-semibold">Margin:</span> {((priceCustomOrnament - unitCosts.customOrnament) / priceCustomOrnament * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+
+                                <div className="bg-blue-50 rounded-lg p-4">
+                                    <h3 className="font-semibold text-blue-900 mb-3">Fixed Ornaments</h3>
+                                    <div className="mb-2">
+                                        <span className="price-tag">${priceFixedOrnament.toFixed(2)}</span>
+                                        <span className="text-xs text-gray-600 ml-2">per unit</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="1.2" 
+                                        max="6" 
+                                        step="0.1"
+                                        value={priceFixedOrnament}
+                                        onChange={(e) => setPriceFixedOrnament(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$1.2</span>
+                                        <span>$6</span>
+                                    </div>
+                                    <div className="text-sm text-gray-700 mt-2">
+                                        <span className="font-semibold">Margin:</span> {((priceFixedOrnament - unitCosts.fixedOrnament) / priceFixedOrnament * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+
+                                <div className="bg-green-50 rounded-lg p-4">
+                                    <h3 className="font-semibold text-green-900 mb-3">Sublimation</h3>
+                                    <div className="mb-2">
+                                        <span className="price-tag">${priceSublimation.toFixed(2)}</span>
+                                        <span className="text-xs text-gray-600 ml-2">per unit</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="2.5" 
+                                        max="12" 
+                                        step="0.1"
+                                        value={priceSublimation}
+                                        onChange={(e) => setPriceSublimation(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$2.5</span>
+                                        <span>$12</span>
+                                    </div>
+                                    <div className="text-sm text-gray-700 mt-2">
+                                        <span className="font-semibold">Margin:</span> {((priceSublimation - unitCosts.sublimation) / priceSublimation * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+
+                                <div className="bg-orange-50 rounded-lg p-4">
+                                    <h3 className="font-semibold text-orange-900 mb-3">Apparel</h3>
+                                    <div className="mb-2">
+                                        <span className="price-tag">${priceApparel.toFixed(2)}</span>
+                                        <span className="text-xs text-gray-600 ml-2">per unit</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="3.5" 
+                                        max="18" 
+                                        step="0.1"
+                                        value={priceApparel}
+                                        onChange={(e) => setPriceApparel(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$3.5</span>
+                                        <span>$18</span>
+                                    </div>
+                                    <div className="text-sm text-gray-700 mt-2">
+                                        <span className="font-semibold">Margin:</span> {((priceApparel - unitCosts.apparel) / priceApparel * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+
+                                <div className="bg-cyan-50 rounded-lg p-4">
+                                    <h3 className="font-semibold text-cyan-900 mb-3">Paper Products</h3>
+                                    <div className="mb-2">
+                                        <span className="price-tag">${pricePaper.toFixed(2)}</span>
+                                        <span className="text-xs text-gray-600 ml-2">per unit</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="0.8" 
+                                        max="4" 
+                                        step="0.1"
+                                        value={pricePaper}
+                                        onChange={(e) => setPricePaper(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$0.8</span>
+                                        <span>$4</span>
+                                    </div>
+                                    <div className="text-sm text-gray-700 mt-2">
+                                        <span className="font-semibold">Margin:</span> {((pricePaper - unitCosts.paper) / pricePaper * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Financial Variables */}
+                        <div className="glass-card p-6 md-p-8 mb-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 text-purple-600"><Icons.Settings /></div>
+                                <h2 className="text-xl text-2xl font-bold text-gray-800">Cost & Operations Variables</h2>
+                            </div>
+
+                            <div className="grid md-grid-cols-3 gap-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Material Cost Multiplier: {materialCostMultiplier.toFixed(2)}x
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="0.7" 
+                                        max="1.5" 
+                                        step="0.05"
+                                        value={materialCostMultiplier}
+                                        onChange={(e) => setMaterialCostMultiplier(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>0.7x (-30%)</span>
+                                        <span>1.5x (+50%)</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Labor Wage: ${laborWage}/hour
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="12" 
+                                        max="30" 
+                                        value={laborWage}
+                                        onChange={(e) => setLaborWage(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$12</span>
+                                        <span>$30</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Rent per sq ft/month: ${rentPerSqFtPerMonth.toFixed(2)}
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="0.5" 
+                                        max="5" 
+                                        step="0.1"
+                                        value={rentPerSqFtPerMonth}
+                                        onChange={(e) => setRentPerSqFtPerMonth(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$0.5</span>
+                                        <span>$5.0</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Factory Size: {factorySquareFeet.toLocaleString()} sq ft
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="5000" 
+                                        max="100000" 
+                                        step="1000"
+                                        value={factorySquareFeet}
+                                        onChange={(e) => setFactorySquareFeet(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>5,000 sq ft</span>
+                                        <span>100,000 sq ft</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Customer Acquisition: {acquisitionCostPercent}%
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="25" 
+                                        value={acquisitionCostPercent}
+                                        onChange={(e) => setAcquisitionCostPercent(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>0%</span>
+                                        <span>25%</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Defect Rate: {defectRatePercent}%
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="10" 
+                                        step="0.5"
+                                        value={defectRatePercent}
+                                        onChange={(e) => setDefectRatePercent(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>0%</span>
+                                        <span>10%</span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-indigo-50 rounded p-4">
+                                    <h3 className="font-semibold text-indigo-900 mb-2">Factory Rent Cost</h3>
+                                    <p className="text-2xl font-bold text-indigo-900">{formatCurrency(annualRent)}/year</p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                        ${rentPerSqFtPerMonth.toFixed(2)}/sqft/month × {factorySquareFeet.toLocaleString()} sq ft × 12 months
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Equipment & Labor Requirements */}
+                        <div className="glass-card p-6 md-p-8 mb-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 text-indigo-600"><Icons.Settings /></div>
+                                <h2 className="text-xl text-2xl font-bold text-gray-800">Equipment & Labor Requirements - {current.name}</h2>
+                            </div>
+
+                            <div className="grid md-grid-cols-2 gap-6">
+                                {/* Equipment Requirements */}
+                                <div className="bg-indigo-50 rounded-lg p-4">
+                                    <h3 className="font-bold text-indigo-900 mb-4">Equipment Requirements</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">UV Printers:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.uvPrinters} units</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Laser Cutters:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.laserCutters} units</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Sublimation Printers:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.sublimationPrinters} units</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Heat Presses:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.heatPresses} units</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">DTF Printers:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.dtfPrinters} units</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Apparel Heat Presses:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.apparelHeatPresses} units</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Digital Presses:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.digitalPresses} units</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Paper Cutters:</span>
+                                            <span className="font-bold text-indigo-900">{calculations.equipmentRequirements.paperCutters} units</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Labor Requirements */}
+                                <div className="bg-purple-50 rounded-lg p-4">
+                                    <h3 className="font-bold text-purple-900 mb-4">Labor Requirements</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Ornament Operators:</span>
+                                            <span className="font-bold text-purple-900">{calculations.laborRequirements.ornamentOperators}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Sublimation Operators:</span>
+                                            <span className="font-bold text-purple-900">{calculations.laborRequirements.sublimationOperators}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Apparel Operators:</span>
+                                            <span className="font-bold text-purple-900">{calculations.laborRequirements.apparelOperators}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Paper Operators:</span>
+                                            <span className="font-bold text-purple-900">{calculations.laborRequirements.paperOperators}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">QC Staff:</span>
+                                            <span className="font-bold text-purple-900">{calculations.laborRequirements.qcStaff}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Packing Staff:</span>
+                                            <span className="font-bold text-purple-900">{calculations.laborRequirements.packingStaff}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">Supervisors:</span>
+                                            <span className="font-bold text-purple-900">{calculations.laborRequirements.supervisors}</span>
+                                        </div>
+                                        <div className="pt-3 border-t">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-700 font-semibold">Total Staff per Shift:</span>
+                                                <span className="font-bold text-purple-900 text-lg">{calculations.laborRequirements.totalStaffPerShift}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700 font-semibold">Shifts per Day:</span>
+                                            <span className="font-bold text-purple-900">
+                                                {scenario === 'christmas' ? '2.5' : 
+                                                 scenario === 'mothers' ? '2' : 
+                                                 scenario === 'smallpeak' ? '1.5' : '1'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Inventory Planning - FIXED LOGIC */}
+                        <div className="glass-card p-6 md-p-8 mb-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 text-orange-600"><Icons.Package /></div>
+                                <h2 className="text-xl text-2xl font-bold text-gray-800">📦 Inventory & Stock Planning</h2>
+                                <span className="text-sm bg-amber-100 text-amber-800 px-3 py-1 rounded-full">
+                                    Lead Time: 4 months (120 days) + 30 days safety stock
+                                </span>
+                            </div>
+
+                            <div className="mb-6 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-500">
+                                <div className="flex items-start gap-3">
+                                    <div className="w-6 h-6 text-amber-600"><Icons.Calendar /></div>
+                                    <div>
+                                        <h3 className="font-bold text-amber-900 mb-1">Critical Order Timing for {current.name}</h3>
+                                        <p className="text-sm text-amber-800">
+                                            Phôi cần đặt trước <strong>120 ngày (4 tháng)</strong> do thời gian sản xuất và vận chuyển. 
+                                            Thêm <strong>30 ngày dự phòng</strong> để đảm bảo không thiếu hàng khi mùa bắt đầu.
+                                            <br/>
+                                            <strong>Tổng cộng: 150 ngày inventory cần chuẩn bị trước.</strong>
+                                        </p>
+                                        <p className="text-sm font-semibold text-amber-900 mt-2">
+                                            {inventoryPlan.summary.orderDeadline}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid md-grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                                <div className="inventory-card bg-orange-50 border-orange-200 rounded-lg p-4">
+                                    <h3 className="font-bold text-orange-900 mb-3">🎄 Custom Shape Ornaments</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Daily Production:</span>
+                                            <span className="font-bold">{inventoryPlan.customShape.dailyProduction.toLocaleString()}/day</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Blanks Needed (150 days):</span>
+                                            <span className="font-bold">{inventoryPlan.customShape.blanksNeeded.toLocaleString()} units</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Cost per Blank:</span>
+                                            <span className="font-bold">${inventoryPlan.customShape.costPerBlank.toFixed(2)}</span>
+                                        </div>
+                                        <div className="pt-2 border-t">
+                                            <div className="flex justify-between font-bold">
+                                                <span>Total Cost:</span>
+                                                <span className="text-lg text-orange-900">${formatNumber(inventoryPlan.customShape.totalCost)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.customShape.orderTiming}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="inventory-card bg-blue-50 border-blue-200 rounded-lg p-4">
+                                    <h3 className="font-bold text-blue-900 mb-3">🔵 Fixed Shape Ornaments</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Daily Production:</span>
+                                            <span className="font-bold">{inventoryPlan.fixedShape.dailyProduction.toLocaleString()}/day</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Glass Blanks Needed (150 days):</span>
+                                            <span className="font-bold">{inventoryPlan.fixedShape.blanksNeeded.toLocaleString()} units</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Cost per Blank:</span>
+                                            <span className="font-bold">${inventoryPlan.fixedShape.costPerBlank.toFixed(2)}</span>
+                                        </div>
+                                        <div className="pt-2 border-t">
+                                            <div className="flex justify-between font-bold">
+                                                <span>Total Cost:</span>
+                                                <span className="text-lg text-blue-900">${formatNumber(inventoryPlan.fixedShape.totalCost)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.fixedShape.orderTiming}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="inventory-card bg-purple-50 border-purple-200 rounded-lg p-4">
+                                    <h3 className="font-bold text-purple-900 mb-3">☕ Sublimation Products</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Daily Production:</span>
+                                            <span className="font-bold">{inventoryPlan.sublimation.dailyProduction.toLocaleString()}/day</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Blanks Needed (150 days):</span>
+                                            <span className="font-bold">{inventoryPlan.sublimation.blanksNeeded.toLocaleString()} units</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Cost per Blank:</span>
+                                            <span className="font-bold">${inventoryPlan.sublimation.costPerBlank.toFixed(2)}</span>
+                                        </div>
+                                        <div className="pt-2 border-t">
+                                            <div className="flex justify-between font-bold">
+                                                <span>Total Cost:</span>
+                                                <span className="text-lg text-purple-900">${formatNumber(inventoryPlan.sublimation.totalCost)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.sublimation.orderTiming}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="inventory-card bg-green-50 border-green-200 rounded-lg p-4">
+                                    <h3 className="font-bold text-green-900 mb-3">👕 Apparel Products</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Daily Production:</span>
+                                            <span className="font-bold">{inventoryPlan.apparel.dailyProduction.toLocaleString()}/day</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Garments Needed (150 days):</span>
+                                            <span className="font-bold">{inventoryPlan.apparel.garmentsNeeded.toLocaleString()} units</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Cost per Garment:</span>
+                                            <span className="font-bold">${inventoryPlan.apparel.costPerGarment.toFixed(2)}</span>
+                                        </div>
+                                        <div className="pt-2 border-t">
+                                            <div className="flex justify-between font-bold">
+                                                <span>Total Cost:</span>
+                                                <span className="text-lg text-green-900">${formatNumber(inventoryPlan.apparel.totalCost)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.apparel.orderTiming}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="inventory-card bg-cyan-50 border-cyan-200 rounded-lg p-4">
+                                    <h3 className="font-bold text-cyan-900 mb-3">📄 Paper Products</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Daily Production:</span>
+                                            <span className="font-bold">{inventoryPlan.paper.dailyProduction.toLocaleString()}/day</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Paper Stock Needed (150 days):</span>
+                                            <span className="font-bold">{inventoryPlan.paper.paperStockNeeded.toLocaleString()} sheets</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Cost per Sheet:</span>
+                                            <span className="font-bold">${inventoryPlan.paper.costPerSheet.toFixed(2)}</span>
+                                        </div>
+                                        <div className="pt-2 border-t">
+                                            <div className="flex justify-between font-bold">
+                                                <span>Total Cost:</span>
+                                                <span className="text-lg text-cyan-900">${formatNumber(inventoryPlan.paper.totalCost)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.paper.orderTiming}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="inventory-card bg-pink-50 border-pink-200 rounded-lg p-4">
+                                    <h3 className="font-bold text-pink-900 mb-3">📊 Inventory Summary</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-sm text-gray-700 mb-1">Total Blanks/Garments Needed:</p>
+                                            <p className="text-2xl font-bold text-pink-900">{inventoryPlan.summary.totalBlanksNeeded.toLocaleString()}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-700 mb-1">Total Inventory Value:</p>
+                                            <p className="text-2xl font-bold text-pink-900">${formatNumber(inventoryPlan.summary.totalInventoryValue)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-700 mb-1">Lead Time:</p>
+                                            <p className="text-sm font-semibold">{inventoryPlan.summary.leadTime}</p>
+                                        </div>
+                                        <div className="bg-white rounded p-3">
+                                            <p className="text-xs text-gray-700">Based on {current.name} production volume</p>
+                                            <p className="text-xs text-gray-700 mt-1">Order deadline: {inventoryPlan.summary.orderDeadline}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-emerald-50 rounded-lg border-l-4 border-green-500">
+                                <h3 className="font-semibold text-green-900 mb-2">📋 Inventory Strategy</h3>
+                                <ul className="text-sm text-gray-700 space-y-1 ml-4">
+                                    <li>• <strong>Critical path:</strong> Phôi cần đặt trước 4 tháng + 30 ngày safety stock</li>
+                                    <li>• <strong>Cash flow impact:</strong> ${formatNumber(inventoryPlan.summary.totalInventoryValue)} tied up in inventory</li>
+                                    <li>• <strong>Storage needed:</strong> Estimate 15-20% of factory space for raw materials</li>
+                                    <li>• <strong>Seasonal planning:</strong> Order for Christmas in July/August, Mother's Day in January</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Financial Overview */}
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-100 rounded-lg shadow-xl glass-card">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 text-green-600"><Icons.DollarSign /></div>
+                                <h2 className="text-xl font-bold text-gray-800">💰 Financial Overview - {current.name}</h2>
+                            </div>
+
+                            <div className="grid grid-cols-2 md-grid-cols-4 gap-4 mb-6">
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Annual Revenue</p>
+                                    <p className="text-xl font-bold text-green-600">{formatCurrency(annualRevenue)}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{formatCurrency(dailyRevenue)}/day</p>
+                                </div>
+                                
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Material Cost</p>
+                                    <p className="text-xl font-bold text-red-600">{formatCurrency(annualMaterialCost)}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{annualRevenue > 0 ? ((annualMaterialCost/annualRevenue)*100).toFixed(1) : '0'}% of revenue</p>
+                                </div>
+                                
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Gross Profit</p>
+                                    <p className={`text-xl font-bold ${getColorClass(annualGrossProfit)}`}>
+                                        {formatCurrency(annualGrossProfit)}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">{grossMargin}% margin</p>
+                                </div>
+                                
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Net Profit</p>
+                                    <p className={`text-xl font-bold ${getColorClass(annualNetProfit)}`}>
+                                        {formatCurrency(annualNetProfit)}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">{netMargin}% margin</p>
+                                </div>
+                            </div>
+
+                            <div className="grid md-grid-cols-2 gap-4 mb-6">
+                                <div className="bg-white rounded-lg p-4">
+                                    <h3 className="font-semibold text-gray-800 mb-3">Cost Structure</h3>
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Materials + Defects:</span>
+                                            <span className="font-bold">{formatCurrency(annualMaterialCost)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Labor:</span>
+                                            <span className="font-bold">{formatCurrency(annualLaborCost)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Customer Acquisition:</span>
+                                            <span className="font-bold">{formatCurrency(acquisitionCost)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Equipment Depreciation:</span>
+                                            <span className="font-bold">{formatCurrency(equipmentDepreciation)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Rent:</span>
+                                            <span className="font-bold">{formatCurrency(annualRent)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700">Utilities:</span>
+                                            <span className="font-bold">{formatCurrency(utilities)}</span>
+                                        </div>
+                                        <div className="pt-2 border-t">
+                                            <div className="flex justify-between font-bold">
+                                                <span>Cost per Unit:</span>
+                                                <span>${costPerUnit.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg p-4">
+                                    <h3 className="font-semibold text-gray-800 mb-3">Break-Even Analysis</h3>
+                                    <div className="space-y-4">
+                                        <div className="bg-blue-50 rounded p-3">
+                                            <p className="text-sm text-gray-700 mb-1">Break-even Units:</p>
+                                            <p className="text-2xl font-bold text-blue-900">{formatNumber(breakEvenUnits)}</p>
+                                        </div>
+                                        <div className="bg-purple-50 rounded p-3">
+                                            <p className="text-sm text-gray-700 mb-1">Break-even Days:</p>
+                                            <p className="text-2xl font-bold text-purple-900">{breakEvenDays.toFixed(1)} days</p>
+                                            <p className="text-xs text-gray-600 mt-1">At current daily volume</p>
+                                        </div>
+                                        <div className={`rounded p-3 ${annualNetProfit > 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+                                            <p className="text-sm text-gray-700 mb-1">Status:</p>
+                                            <p className={`text-lg font-bold ${getColorClass(annualNetProfit)}`}>
+                                                {annualNetProfit > 0 ? 'Profitable' : 'Losing Money'}
+                                            </p>
+                                            <p className="text-xs text-gray-600 mt-1">
+                                                {annualNetProfit > 0 
+                                                    ? `Operating ${current.daysPerYear} days, breaking even at ${breakEvenDays.toFixed(1)} days`
+                                                    : `Need to reduce costs or increase prices`}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Full Year Blended Analysis */}
+                        <div className="bg-gradient-to-r from-purple-50 to-pink-100 rounded-lg shadow-xl glass-card">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-8 h-8 text-purple-600"><Icons.TrendingUp /></div>
+                                <h2 className="text-xl font-bold text-gray-800">📈 Full Year Blended Analysis</h2>
+                            </div>
+                            
+                            <p className="text-sm text-gray-700 mb-4">Timeline: 240 days low season + 45 days small peaks + 30 days Mother's Day + 50 days Christmas = 365 days</p>
+
+                            <div className="grid grid-cols-2 md-grid-cols-4 gap-4 mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
+                                    <p className="text-xl font-bold text-green-600">{formatCurrency(blendedData.totalAnnualRevenueBlended)}</p>
+                                </div>
+                                
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Material Costs</p>
+                                    <p className="text-xl font-bold text-red-600">{formatCurrency(blendedData.totalAnnualMaterialCostBlended)}</p>
+                                </div>
+                                
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Gross Profit</p>
+                                    <p className={`text-xl font-bold ${getColorClass(blendedData.blendedAnnualGrossProfit)}`}>
+                                        {formatCurrency(blendedData.blendedAnnualGrossProfit)}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">{blendedData.blendedGrossMargin}% margin</p>
+                                </div>
+                                
+                                <div className="bg-white rounded-lg p-4 shadow">
+                                    <p className="text-sm text-gray-600 mb-1">Net Profit</p>
+                                    <p className={`text-xl font-bold ${getColorClass(blendedData.blendedAnnualNetProfit)}`}>
+                                        {formatCurrency(blendedData.blendedAnnualNetProfit)}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">{blendedData.blendedNetMargin}% margin</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg p-6">
+                                <h3 className="font-bold text-gray-800 mb-4">Strategic Insights & Recommendations</h3>
+                                
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                                        <h4 className="font-semibold text-green-900 mb-2">Financial Performance</h4>
+                                        <p className="text-sm text-gray-800 mb-2">
+                                            <strong>Full year net profit: {formatCurrency(blendedData.blendedAnnualNetProfit)} ({blendedData.blendedNetMargin}% margin)</strong>
+                                        </p>
+                                        <ul className="text-sm text-gray-700 space-y-1 ml-4">
+                                            <li>• Gross margin: {blendedData.blendedGrossMargin}% across all seasons</li>
+                                            <li>• Total units produced: {formatNumber(blendedData.totalAnnualUnitsBlended)} units/year</li>
+                                            <li>• Inventory cost: {formatCurrency(inventoryPlan.summary.totalInventoryValue)} per peak season</li>
+                                            <li>• {blendedData.blendedAnnualNetProfit > 0 ? 'Business model is profitable with current assumptions' : 'Adjust pricing or reduce costs to achieve profitability'}</li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                                        <h4 className="font-semibold text-blue-900 mb-2">Seasonal Strategy & Inventory</h4>
+                                        <ul className="text-sm text-gray-700 space-y-1 ml-4">
+                                            <li>• <strong>Christmas orders:</strong> Place phôi orders by July/August (120+ days before)</li>
+                                            <li>• <strong>Mother's Day orders:</strong> Place phôi orders by January</li>
+                                            <li>• <strong>Low season:</strong> Maintain 30-45 days inventory for continuous production</li>
+                                            <li>• <strong>Cash flow planning:</strong> Reserve ${formatNumber(inventoryPlan.summary.totalInventoryValue * 1.2)} for peak season inventory</li>
+                                            <li>• <strong>Storage planning:</strong> Allocate 20-25% of factory space for raw material storage</li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="p-4 bg-amber-50 rounded-lg border-l-4 border-amber-500">
+                                        <h4 className="font-semibold text-amber-900 mb-2">Critical Success Factors</h4>
+                                        <ul className="text-sm text-gray-700 space-y-1 ml-4">
+                                            <li>• <strong>Inventory timing:</strong> Phôi orders must be placed 4 months in advance</li>
+                                            <li>• <strong>Working capital:</strong> Need ${formatNumber(inventoryPlan.summary.totalInventoryValue)} for raw materials</li>
+                                            <li>• <strong>Supplier reliability:</strong> Must have dependable suppliers for 4-month lead times</li>
+                                            <li>• <strong>Demand forecasting:</strong> Accurate sales projections critical for inventory planning</li>
+                                            <li>• <strong>Storage management:</strong> Proper warehousing for 150 days of inventory</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sensitivity Analysis */}
+                        <div className="glass-card p-6 md-p-8 mb-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 text-indigo-600"><Icons.BarChart /></div>
+                                <h2 className="text-xl text-2xl font-bold text-gray-800">📊 Sensitivity Analysis - {current.name}</h2>
+                            </div>
+
+                            <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                                <h3 className="font-bold text-blue-900 mb-3">Base Scenario</h3>
+                                <div className="grid grid-cols-2 md-grid-cols-4 gap-4">
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Base Net Profit</p>
+                                        <p className={`text-xl font-bold ${getColorClass(sensitivityAnalysis.baseNetProfit)}`}>
+                                            {formatCurrency(sensitivityAnalysis.baseNetProfit)}
+                                        </p>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Net Margin</p>
+                                        <p className="text-xl font-bold text-blue-900">{netMargin}%</p>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Break-even Days</p>
+                                        <p className="text-xl font-bold text-purple-900">{breakEvenDays.toFixed(1)} days</p>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Daily Production</p>
+                                        <p className="text-xl font-bold text-green-900">{calculations.totalUnitsPerDay.toLocaleString()}/day</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="overflow-x-auto">
+                                <table className="sensitivity-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Variable</th>
+                                            <th>Change</th>
+                                            <th>Net Profit</th>
+                                            <th>Profit Change</th>
+                                            <th>Impact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sensitivityAnalysis.scenarios.map((scenario, index) => (
+                                            <tr key={index}>
+                                                <td className="font-semibold">{scenario.variable}</td>
+                                                <td className={scenario.change.includes('-') ? 'negative' : scenario.change === '0%' ? 'neutral' : 'positive'}>
+                                                    {scenario.change}
+                                                </td>
+                                                <td className={scenario.netProfit > 0 ? 'positive' : 'negative'}>
+                                                    {formatCurrency(scenario.netProfit)}
+                                                </td>
+                                                <td className={scenario.profitChange.includes('-') ? 'negative' : scenario.profitChange === '0.0' ? 'neutral' : 'positive'}>
+                                                    {scenario.profitChange}%
+                                                </td>
+                                                <td>
+                                                    {Math.abs(parseFloat(scenario.profitChange)) > 20 ? '🔴 High' : 
+                                                     Math.abs(parseFloat(scenario.profitChange)) > 10 ? '🟡 Medium' : '🟢 Low'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="mt-6 grid md-grid-cols-3 gap-4">
+                                <div className="p-4 bg-green-50 rounded-lg">
+                                    <h4 className="font-bold text-green-900 mb-2">Key Insights</h4>
+                                    <ul className="text-sm text-gray-700 space-y-1">
+                                        <li>• Price changes have the <strong>largest impact</strong> on profitability</li>
+                                        <li>• Material costs are the <strong>most sensitive</strong> cost component</li>
+                                        <li>• Volume changes affect both revenue and operating costs</li>
+                                        <li>• Break-even is most sensitive to <strong>price and material costs</strong></li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-lg">
+                                    <h4 className="font-bold text-amber-900 mb-2">Risk Assessment</h4>
+                                    <ul className="text-sm text-gray-700 space-y-1">
+                                        <li>• <strong>High risk:</strong> Material cost increases above 5%</li>
+                                        <li>• <strong>Medium risk:</strong> Price decreases above 5%</li>
+                                        <li>• <strong>Low risk:</strong> Volume fluctuations within 10%</li>
+                                        <li>• <strong>Critical:</strong> Rent increases above $3/sqft/month</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-lg">
+                                    <h4 className="font-bold text-blue-900 mb-2">Recommendations</h4>
+                                    <ul className="text-sm text-gray-700 space-y-1">
+                                        <li>• <strong>Hedge material costs</strong> with long-term contracts</li>
+                                        <li>• <strong>Maintain price discipline</strong> - avoid discounts >5%</li>
+                                        <li>• <strong>Focus on volume growth</strong> to spread fixed costs</li>
+                                        <li>• <strong>Monitor rent costs</strong> - consider relocation if >$3.5/sqft</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<ProductionPlan />, document.getElementById('root'));
+    </script>
+</body>
+</html>
