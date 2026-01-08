@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POD Production & Financial Plan V5</title>
+    <title>POD Production & Financial Plan V5.6</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -204,13 +204,74 @@
             border-radius: 50%;
             background: #667eea;
         }
+        /* Thêm style cho các input số */
+        .number-input {
+            padding: 0.5rem;
+            border: 1px solid #c7d2fe;
+            border-radius: 0.375rem;
+            width: 100%;
+            text-align: center;
+        }
+        .number-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        /* Button styles */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        /* Sensitivity analysis styles */
+        .sensitivity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .sensitivity-table th,
+        .sensitivity-table td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+        .sensitivity-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        .sensitivity-table tr:hover {
+            background-color: #f3f4f6;
+        }
+        .positive { color: #16a34a; }
+        .negative { color: #dc2626; }
+        .neutral { color: #6b7280; }
     </style>
 </head>
 <body>
     <div id="root"></div>
     
     <script type="text/babel">
-        const { useState, useMemo } = React;
+        const { useState, useMemo, useEffect } = React;
 
         const Icons = {
             Calculator: () => (
@@ -270,25 +331,32 @@
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
+            ),
+            Refresh: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                    <path d="M21 3v5h-5"/>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                    <path d="M3 21v-5h5"/>
+                </svg>
             )
         };
 
-        function ProductionPlan() {
-            const [scenario, setScenario] = useState('low');
-            const [materialCostMultiplier, setMaterialCostMultiplier] = useState(1.0);
-            const [laborWage, setLaborWage] = useState(18);
-            const [rentPerSqFt, setRentPerSqFt] = useState(8);
-            const [acquisitionCostPercent, setAcquisitionCostPercent] = useState(10);
-            const [defectRatePercent, setDefectRatePercent] = useState(3);
-            
-            // Price ranges for each product
-            const [priceCustomOrnament, setPriceCustomOrnament] = useState(3.0);
-            const [priceFixedOrnament, setPriceFixedOrnament] = useState(2.5);
-            const [priceSublimation, setPriceSublimation] = useState(4.5);
-            const [priceApparel, setPriceApparel] = useState(6.25);
-            const [pricePaper, setPricePaper] = useState(2.0);
-            
-            const scenarios = {
+        // Default values
+        const DEFAULT_VALUES = {
+            scenario: 'low',
+            materialCostMultiplier: 1.0,
+            laborWage: 18,
+            rentPerSqFtPerMonth: 2.0,
+            factorySquareFeet: 10000,
+            acquisitionCostPercent: 10,
+            defectRatePercent: 3,
+            priceCustomOrnament: 3.0,
+            priceFixedOrnament: 2.5,
+            priceSublimation: 4.5,
+            priceApparel: 6.25,
+            pricePaper: 2.0,
+            scenarioData: {
                 low: {
                     name: 'Low Season',
                     customShapeUnits: 5000,
@@ -329,9 +397,57 @@
                     uvPrinters: 20,
                     daysPerYear: 50
                 }
+            }
+        };
+
+        function ProductionPlan() {
+            const [scenario, setScenario] = useState(DEFAULT_VALUES.scenario);
+            const [materialCostMultiplier, setMaterialCostMultiplier] = useState(DEFAULT_VALUES.materialCostMultiplier);
+            const [laborWage, setLaborWage] = useState(DEFAULT_VALUES.laborWage);
+            const [rentPerSqFtPerMonth, setRentPerSqFtPerMonth] = useState(DEFAULT_VALUES.rentPerSqFtPerMonth);
+            const [factorySquareFeet, setFactorySquareFeet] = useState(DEFAULT_VALUES.factorySquareFeet);
+            const [acquisitionCostPercent, setAcquisitionCostPercent] = useState(DEFAULT_VALUES.acquisitionCostPercent);
+            const [defectRatePercent, setDefectRatePercent] = useState(DEFAULT_VALUES.defectRatePercent);
+            
+            // Price ranges for each product
+            const [priceCustomOrnament, setPriceCustomOrnament] = useState(DEFAULT_VALUES.priceCustomOrnament);
+            const [priceFixedOrnament, setPriceFixedOrnament] = useState(DEFAULT_VALUES.priceFixedOrnament);
+            const [priceSublimation, setPriceSublimation] = useState(DEFAULT_VALUES.priceSublimation);
+            const [priceApparel, setPriceApparel] = useState(DEFAULT_VALUES.priceApparel);
+            const [pricePaper, setPricePaper] = useState(DEFAULT_VALUES.pricePaper);
+            
+            // Editable scenario data
+            const [scenarioData, setScenarioData] = useState(DEFAULT_VALUES.scenarioData);
+            
+            const current = scenarioData[scenario];
+            
+            // Reset to default function
+            const resetToDefault = () => {
+                setScenario(DEFAULT_VALUES.scenario);
+                setMaterialCostMultiplier(DEFAULT_VALUES.materialCostMultiplier);
+                setLaborWage(DEFAULT_VALUES.laborWage);
+                setRentPerSqFtPerMonth(DEFAULT_VALUES.rentPerSqFtPerMonth);
+                setFactorySquareFeet(DEFAULT_VALUES.factorySquareFeet);
+                setAcquisitionCostPercent(DEFAULT_VALUES.acquisitionCostPercent);
+                setDefectRatePercent(DEFAULT_VALUES.defectRatePercent);
+                setPriceCustomOrnament(DEFAULT_VALUES.priceCustomOrnament);
+                setPriceFixedOrnament(DEFAULT_VALUES.priceFixedOrnament);
+                setPriceSublimation(DEFAULT_VALUES.priceSublimation);
+                setPriceApparel(DEFAULT_VALUES.priceApparel);
+                setPricePaper(DEFAULT_VALUES.pricePaper);
+                setScenarioData(JSON.parse(JSON.stringify(DEFAULT_VALUES.scenarioData)));
             };
             
-            const current = scenarios[scenario];
+            // Handle scenario data changes
+            const handleScenarioDataChange = (scenarioKey, field, value) => {
+                setScenarioData(prev => ({
+                    ...prev,
+                    [scenarioKey]: {
+                        ...prev[scenarioKey],
+                        [field]: Number(value)
+                    }
+                }));
+            };
             
             // Calculations with useMemo for better performance
             const calculations = useMemo(() => {
@@ -346,8 +462,6 @@
                 const paperCutters = Math.ceil(current.paperUnits / 3000);
                 
                 const totalUnitsPerDay = totalOrnaments + current.sublimationUnits + current.apparelUnits + current.paperUnits;
-                
-                const factorySquareFeet = Math.round(totalUnitsPerDay * 7 * 30 / 2 / 100);
                 
                 const ornamentOperators = Math.ceil((current.uvPrinters + laserMachines) / 2.5);
                 const sublimationOperators = Math.ceil((sublimationPrinters + heatPresses) / 2);
@@ -381,7 +495,6 @@
                     supervisors,
                     totalStaffPerShift,
                     
-                    // Thêm các tính toán mới cho phần Equipment & Labor Requirements
                     equipmentRequirements: {
                         uvPrinters: current.uvPrinters,
                         laserCutters: laserMachines,
@@ -405,7 +518,7 @@
                         totalStaffPerShift: totalStaffPerShift
                     }
                 };
-            }, [current]);
+            }, [current, factorySquareFeet]);
             
             // Selling prices from individual price sliders
             const sellingPrices = {
@@ -462,7 +575,8 @@
             const annualGrossProfit = dailyGrossProfit * current.daysPerYear;
             const grossMargin = annualRevenue > 0 ? (annualGrossProfit / annualRevenue * 100).toFixed(1) : '0.0';
             
-            const annualRent = calculations.factorySquareFeet * rentPerSqFt;
+            // Rent calculation: monthly rent * 12 months
+            const annualRent = factorySquareFeet * rentPerSqFtPerMonth * 12;
             
             const equipmentCosts = {
                 uvPrinter: 35000,
@@ -507,53 +621,57 @@
             const breakEvenUnits = dailyRevenuePerUnit > 0 ? totalAnnualCost / dailyRevenuePerUnit : 0;
             const breakEvenDays = calculations.totalUnitsPerDay > 0 ? breakEvenUnits / calculations.totalUnitsPerDay : 0;
             
-            // Inventory Planning - Phôi cần đặt trước 4 tháng (120 ngày)
+            // FIXED: Inventory Planning - Tính theo lead time chuẩn bị cho mùa đó
             const inventoryPlan = useMemo(() => {
                 const daysToOrder = 120; // 4 tháng lead time
                 const safetyStockDays = 30; // Thêm 30 ngày dự phòng
-                const totalDaysInventory = daysToOrder + safetyStockDays;
+                const totalDaysInventory = daysToOrder + safetyStockDays; // 150 ngày tổng
+                
+                // Calculate order deadline
+                const orderDeadlineDate = new Date();
+                orderDeadlineDate.setDate(orderDeadlineDate.getDate() + daysToOrder);
                 
                 return {
                     customShape: {
                         dailyProduction: current.customShapeUnits,
                         blanksNeeded: Math.round(current.customShapeUnits * totalDaysInventory),
-                        costPerBlank: unitCosts.customOrnament * 0.6, // 60% of total material cost
+                        costPerBlank: unitCosts.customOrnament * 0.6,
                         totalCost: Math.round(current.customShapeUnits * totalDaysInventory * unitCosts.customOrnament * 0.6),
-                        orderTiming: `Order ${totalDaysInventory} days before peak season`
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
                     },
                     fixedShape: {
                         dailyProduction: current.fixedShapeUnits,
                         blanksNeeded: Math.round(current.fixedShapeUnits * totalDaysInventory),
                         costPerBlank: unitCosts.fixedOrnament * 0.6,
                         totalCost: Math.round(current.fixedShapeUnits * totalDaysInventory * unitCosts.fixedOrnament * 0.6),
-                        orderTiming: `Order ${totalDaysInventory} days before peak season`
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
                     },
                     sublimation: {
                         dailyProduction: current.sublimationUnits,
                         blanksNeeded: Math.round(current.sublimationUnits * totalDaysInventory),
-                        costPerBlank: unitCosts.sublimation * 0.7, // 70% of total material cost
+                        costPerBlank: unitCosts.sublimation * 0.7,
                         totalCost: Math.round(current.sublimationUnits * totalDaysInventory * unitCosts.sublimation * 0.7),
-                        orderTiming: `Order ${totalDaysInventory} days before peak season`
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
                     },
                     apparel: {
                         dailyProduction: current.apparelUnits,
                         garmentsNeeded: Math.round(current.apparelUnits * totalDaysInventory),
                         costPerGarment: unitCosts.apparel * 0.7,
                         totalCost: Math.round(current.apparelUnits * totalDaysInventory * unitCosts.apparel * 0.7),
-                        orderTiming: `Order ${totalDaysInventory} days before peak season`
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
                     },
                     paper: {
                         dailyProduction: current.paperUnits,
                         paperStockNeeded: Math.round(current.paperUnits * totalDaysInventory),
-                        costPerSheet: unitCosts.paper * 0.8, // 80% of total material cost
+                        costPerSheet: unitCosts.paper * 0.8,
                         totalCost: Math.round(current.paperUnits * totalDaysInventory * unitCosts.paper * 0.8),
-                        orderTiming: `Order ${totalDaysInventory} days before peak season`
+                        orderTiming: `Order ${daysToOrder} days before ${current.name} starts`
                     },
                     summary: {
-                        totalInventoryValue: 0, // Will be calculated
+                        totalInventoryValue: 0,
                         totalBlanksNeeded: 0,
                         leadTime: "4 months (120 days) + 30 days safety stock",
-                        orderDeadline: `Must order by ${new Date(Date.now() + totalDaysInventory * 24 * 60 * 60 * 1000).toLocaleDateString()} for ${current.name} season`
+                        orderDeadline: `Must order by ${orderDeadlineDate.toLocaleDateString()} for ${current.name} season`
                     }
                 };
             }, [current, unitCosts, materialCostMultiplier]);
@@ -582,7 +700,7 @@
                 let totalAnnualOperatingCostBlended = 0;
                 
                 allScenarios.forEach(key => {
-                    const s = scenarios[key];
+                    const s = scenarioData[key];
                     const units = s.customShapeUnits + s.fixedShapeUnits + s.sublimationUnits + s.apparelUnits + s.paperUnits;
                     const rev = (
                         s.customShapeUnits * sellingPrices.customOrnament +
@@ -637,8 +755,7 @@
                     const shifts = key === 'christmas' ? 2.5 : key === 'mothers' ? 2 : key === 'smallpeak' ? 1.5 : 1;
                     const labor = staff * shifts * 8 * laborWage * s.daysPerYear;
                     
-                    const sqft = Math.round(units * 7 * 30 / 2 / 100);
-                    const rent = sqft * rentPerSqFt;
+                    const rent = factorySquareFeet * rentPerSqFtPerMonth * 12;
                     const utils = (rent + labor) * 0.15;
                     
                     totalAnnualRevenueBlended += rev;
@@ -665,7 +782,173 @@
                     blendedNetMargin
                 };
             }, [priceCustomOrnament, priceFixedOrnament, priceSublimation, priceApparel, pricePaper, 
-                materialCostMultiplier, laborWage, rentPerSqFt, acquisitionCostPercent, defectRatePercent]);
+                materialCostMultiplier, laborWage, rentPerSqFtPerMonth, factorySquareFeet, 
+                acquisitionCostPercent, defectRatePercent, scenarioData]);
+
+            // Sensitivity Analysis
+            const sensitivityAnalysis = useMemo(() => {
+                const baseNetProfit = annualNetProfit;
+                const scenarios = [];
+                
+                // Test different price scenarios
+                const priceChanges = [-10, -5, 0, 5, 10];
+                priceChanges.forEach(change => {
+                    const newPriceCustomOrnament = priceCustomOrnament * (1 + change/100);
+                    const newPriceFixedOrnament = priceFixedOrnament * (1 + change/100);
+                    const newPriceSublimation = priceSublimation * (1 + change/100);
+                    const newPriceApparel = priceApparel * (1 + change/100);
+                    const newPricePaper = pricePaper * (1 + change/100);
+                    
+                    const newDailyRevenue = (
+                        current.customShapeUnits * newPriceCustomOrnament +
+                        current.fixedShapeUnits * newPriceFixedOrnament +
+                        current.sublimationUnits * newPriceSublimation +
+                        current.apparelUnits * newPriceApparel +
+                        current.paperUnits * newPricePaper
+                    );
+                    
+                    const newAnnualRevenue = newDailyRevenue * current.daysPerYear;
+                    const newAnnualGrossProfit = newAnnualRevenue - annualMaterialCost;
+                    const newAnnualNetProfit = newAnnualGrossProfit - totalAnnualOperatingCost;
+                    const profitChange = ((newAnnualNetProfit - baseNetProfit) / Math.abs(baseNetProfit) * 100).toFixed(1);
+                    
+                    scenarios.push({
+                        variable: 'Price Change',
+                        change: `${change}%`,
+                        netProfit: newAnnualNetProfit,
+                        profitChange: profitChange,
+                        type: 'price'
+                    });
+                });
+                
+                // Test different material cost scenarios
+                const materialCostChanges = [-10, -5, 0, 5, 10];
+                materialCostChanges.forEach(change => {
+                    const newMultiplier = materialCostMultiplier * (1 + change/100);
+                    const newUnitCosts = {
+                        customOrnament: baseUnitCosts.customOrnament * newMultiplier,
+                        fixedOrnament: baseUnitCosts.fixedOrnament * newMultiplier,
+                        sublimation: baseUnitCosts.sublimation * newMultiplier,
+                        apparel: baseUnitCosts.apparel * newMultiplier,
+                        paper: baseUnitCosts.paper * newMultiplier
+                    };
+                    
+                    const newDailyMaterialCost = (
+                        current.customShapeUnits * newUnitCosts.customOrnament +
+                        current.fixedShapeUnits * newUnitCosts.fixedOrnament +
+                        current.sublimationUnits * newUnitCosts.sublimation +
+                        current.apparelUnits * newUnitCosts.apparel +
+                        current.paperUnits * newUnitCosts.paper
+                    );
+                    
+                    const newDefectCost = newDailyMaterialCost * (defectRatePercent / 100);
+                    const newTotalDailyMaterialCost = newDailyMaterialCost + newDefectCost;
+                    const newAnnualMaterialCost = newTotalDailyMaterialCost * current.daysPerYear;
+                    
+                    const newAnnualGrossProfit = annualRevenue - newAnnualMaterialCost;
+                    const newAnnualNetProfit = newAnnualGrossProfit - totalAnnualOperatingCost;
+                    const profitChange = ((newAnnualNetProfit - baseNetProfit) / Math.abs(baseNetProfit) * 100).toFixed(1);
+                    
+                    scenarios.push({
+                        variable: 'Material Cost',
+                        change: `${change}%`,
+                        netProfit: newAnnualNetProfit,
+                        profitChange: profitChange,
+                        type: 'cost'
+                    });
+                });
+                
+                // Test different volume scenarios
+                const volumeChanges = [-20, -10, 0, 10, 20];
+                volumeChanges.forEach(change => {
+                    const newCustomShapeUnits = current.customShapeUnits * (1 + change/100);
+                    const newFixedShapeUnits = current.fixedShapeUnits * (1 + change/100);
+                    const newSublimationUnits = current.sublimationUnits * (1 + change/100);
+                    const newApparelUnits = current.apparelUnits * (1 + change/100);
+                    const newPaperUnits = current.paperUnits * (1 + change/100);
+                    
+                    const newDailyRevenue = (
+                        newCustomShapeUnits * priceCustomOrnament +
+                        newFixedShapeUnits * priceFixedOrnament +
+                        newSublimationUnits * priceSublimation +
+                        newApparelUnits * priceApparel +
+                        newPaperUnits * pricePaper
+                    );
+                    
+                    const newAnnualRevenue = newDailyRevenue * current.daysPerYear;
+                    
+                    const newDailyMaterialCost = (
+                        newCustomShapeUnits * unitCosts.customOrnament +
+                        newFixedShapeUnits * unitCosts.fixedOrnament +
+                        newSublimationUnits * unitCosts.sublimation +
+                        newApparelUnits * unitCosts.apparel +
+                        newPaperUnits * unitCosts.paper
+                    );
+                    
+                    const newDefectCost = newDailyMaterialCost * (defectRatePercent / 100);
+                    const newTotalDailyMaterialCost = newDailyMaterialCost + newDefectCost;
+                    const newAnnualMaterialCost = newTotalDailyMaterialCost * current.daysPerYear;
+                    
+                    const newAnnualGrossProfit = newAnnualRevenue - newAnnualMaterialCost;
+                    
+                    // Recalculate operating costs for new volume
+                    const newTotalUnitsPerDay = newCustomShapeUnits + newFixedShapeUnits + newSublimationUnits + newApparelUnits + newPaperUnits;
+                    const newUvPrinters = Math.ceil(newCustomShapeUnits / 1250); // Rough estimate
+                    const newLaserMachines = Math.round(newUvPrinters / 2);
+                    
+                    const newSublimationPrinters = Math.ceil(newSublimationUnits / 600);
+                    const newHeatPresses = Math.ceil(newSublimationUnits / 400);
+                    const newDtfPrinters = Math.ceil(newApparelUnits / 250);
+                    const newApparelHeatPresses = Math.ceil(newApparelUnits / 175);
+                    const newDigitalPresses = Math.ceil(newPaperUnits / 4000);
+                    const newPaperCutters = Math.ceil(newPaperUnits / 3000);
+                    
+                    const newOrnamentOperators = Math.ceil((newUvPrinters + newLaserMachines) / 2.5);
+                    const newSublimationOperators = Math.ceil((newSublimationPrinters + newHeatPresses) / 2);
+                    const newApparelOperators = Math.ceil((newDtfPrinters + newApparelHeatPresses) / 1.5);
+                    const newPaperOperators = Math.ceil((newDigitalPresses + newPaperCutters) / 1.5);
+                    const newTotalOperators = newOrnamentOperators + newSublimationOperators + newApparelOperators + newPaperOperators;
+                    const newQcStaff = Math.ceil(newTotalUnitsPerDay / 2000);
+                    const newPackingStaff = Math.ceil(newTotalUnitsPerDay / 1000);
+                    const newSupervisors = Math.ceil((newTotalOperators + newQcStaff + newPackingStaff) / 10);
+                    const newTotalStaffPerShift = newTotalOperators + newQcStaff + newPackingStaff + newSupervisors;
+                    
+                    const newEquipmentCost = (
+                        newUvPrinters * equipmentCosts.uvPrinter +
+                        newLaserMachines * equipmentCosts.laserCutter +
+                        newSublimationPrinters * equipmentCosts.sublimationPrinter +
+                        newHeatPresses * equipmentCosts.heatPress +
+                        newDtfPrinters * equipmentCosts.dtfPrinter +
+                        newApparelHeatPresses * equipmentCosts.apparelHeatPress +
+                        newDigitalPresses * equipmentCosts.digitalPress +
+                        newPaperCutters * equipmentCosts.paperCutter
+                    ) / 5;
+                    
+                    const newDailyLaborCost = newTotalStaffPerShift * shiftsPerDay * 8 * laborWage;
+                    const newAnnualLaborCost = newDailyLaborCost * current.daysPerYear;
+                    const newUtilities = (annualRent + newAnnualLaborCost) * 0.15;
+                    const newAcquisitionCost = newAnnualRevenue * (acquisitionCostPercent / 100);
+                    
+                    const newTotalAnnualOperatingCost = annualRent + newEquipmentCost + newAnnualLaborCost + newUtilities + newAcquisitionCost;
+                    const newAnnualNetProfit = newAnnualGrossProfit - newTotalAnnualOperatingCost;
+                    const profitChange = ((newAnnualNetProfit - baseNetProfit) / Math.abs(baseNetProfit) * 100).toFixed(1);
+                    
+                    scenarios.push({
+                        variable: 'Production Volume',
+                        change: `${change}%`,
+                        netProfit: newAnnualNetProfit,
+                        profitChange: profitChange,
+                        type: 'volume'
+                    });
+                });
+                
+                return {
+                    baseNetProfit,
+                    scenarios: scenarios.slice(0, 15) // Limit to 15 scenarios
+                };
+            }, [current, priceCustomOrnament, priceFixedOrnament, priceSublimation, priceApparel, pricePaper,
+                materialCostMultiplier, annualRevenue, annualMaterialCost, totalAnnualOperatingCost,
+                defectRatePercent, laborWage, annualRent, acquisitionCostPercent]);
 
             const formatNumber = (num) => {
                 if (!num && num !== 0) return '0';
@@ -687,11 +970,20 @@
             return (
                 <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md-p-8">
                     <div className="max-w-7xl mx-auto">
-                        {/* Header */}
+                        {/* Header with Reset Button */}
                         <div className="glass-card p-6 md-p-8 mb-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="w-8 h-8 text-indigo-600"><Icons.Calculator /></div>
-                                <h1 className="text-2xl text-3xl font-bold text-gray-800">POD Production & Financial Plan V5</h1>
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 text-indigo-600"><Icons.Calculator /></div>
+                                    <h1 className="text-2xl text-3xl font-bold text-gray-800">POD Production & Financial Plan V5.6</h1>
+                                </div>
+                                <button 
+                                    onClick={resetToDefault}
+                                    className="btn btn-secondary"
+                                >
+                                    <Icons.Refresh />
+                                    Reset to Default
+                                </button>
                             </div>
                             
                             <div className="mb-6">
@@ -706,6 +998,79 @@
                                     <option value="mothers">Mother's Day Q2 (30 days)</option>
                                     <option value="christmas">Christmas Q4 (50 days)</option>
                                 </select>
+                            </div>
+
+                            {/* Editable Production Volume */}
+                            <div className="bg-indigo-50 rounded-lg p-4 mb-6">
+                                <h3 className="font-semibold text-indigo-900 mb-3">📊 Customize Production Volume - {current.name}</h3>
+                                <div className="grid grid-cols-2 md-grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Custom Ornaments (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.customShapeUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'customShapeUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Fixed Ornaments (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.fixedShapeUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'fixedShapeUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Sublimation (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.sublimationUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'sublimationUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Apparel (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.apparelUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'apparelUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Paper Products (units/day)</label>
+                                        <input
+                                            type="number"
+                                            value={current.paperUnits}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'paperUnits', e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">UV Printers Needed</label>
+                                        <input
+                                            type="number"
+                                            value={current.uvPrinters}
+                                            onChange={(e) => handleScenarioDataChange(scenario, 'uvPrinters', e.target.value)}
+                                            min="0"
+                                            step="1"
+                                            className="number-input"
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="bg-indigo-50 rounded-lg p-4">
@@ -916,19 +1281,39 @@
 
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Rent: ${rentPerSqFt}/sq ft/year
+                                        Rent per sq ft/month: ${rentPerSqFtPerMonth.toFixed(2)}
                                     </label>
                                     <input 
                                         type="range" 
-                                        min="4" 
-                                        max="20" 
-                                        value={rentPerSqFt}
-                                        onChange={(e) => setRentPerSqFt(Number(e.target.value))}
+                                        min="0.5" 
+                                        max="5" 
+                                        step="0.1"
+                                        value={rentPerSqFtPerMonth}
+                                        onChange={(e) => setRentPerSqFtPerMonth(Number(e.target.value))}
                                         className="slider"
                                     />
                                     <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                        <span>$4</span>
-                                        <span>$20</span>
+                                        <span>$0.5</span>
+                                        <span>$5.0</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Factory Size: {factorySquareFeet.toLocaleString()} sq ft
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="5000" 
+                                        max="100000" 
+                                        step="1000"
+                                        value={factorySquareFeet}
+                                        onChange={(e) => setFactorySquareFeet(Number(e.target.value))}
+                                        className="slider"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>5,000 sq ft</span>
+                                        <span>100,000 sq ft</span>
                                     </div>
                                 </div>
 
@@ -970,9 +1355,11 @@
                                 </div>
 
                                 <div className="bg-indigo-50 rounded p-4">
-                                    <h3 className="font-semibold text-indigo-900 mb-2">Factory Space</h3>
-                                    <p className="text-2xl font-bold text-indigo-900">{calculations.factorySquareFeet.toLocaleString()} sq ft</p>
-                                    <p className="text-xs text-gray-600 mt-1">${annualRent.toLocaleString()}/year</p>
+                                    <h3 className="font-semibold text-indigo-900 mb-2">Factory Rent Cost</h3>
+                                    <p className="text-2xl font-bold text-indigo-900">{formatCurrency(annualRent)}/year</p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                        ${rentPerSqFtPerMonth.toFixed(2)}/sqft/month × {factorySquareFeet.toLocaleString()} sq ft × 12 months
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1075,7 +1462,7 @@
                             </div>
                         </div>
 
-                        {/* Inventory Planning */}
+                        {/* Inventory Planning - FIXED LOGIC */}
                         <div className="glass-card p-6 md-p-8 mb-6">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-8 h-8 text-orange-600"><Icons.Package /></div>
@@ -1089,13 +1476,15 @@
                                 <div className="flex items-start gap-3">
                                     <div className="w-6 h-6 text-amber-600"><Icons.Calendar /></div>
                                     <div>
-                                        <h3 className="font-bold text-amber-900 mb-1">Critical Order Timing</h3>
+                                        <h3 className="font-bold text-amber-900 mb-1">Critical Order Timing for {current.name}</h3>
                                         <p className="text-sm text-amber-800">
                                             Phôi cần đặt trước <strong>120 ngày (4 tháng)</strong> do thời gian sản xuất và vận chuyển. 
-                                            Thêm <strong>30 ngày dự phòng</strong> để đảm bảo không thiếu hàng trong mùa cao điểm.
+                                            Thêm <strong>30 ngày dự phòng</strong> để đảm bảo không thiếu hàng khi mùa bắt đầu.
+                                            <br/>
+                                            <strong>Tổng cộng: 150 ngày inventory cần chuẩn bị trước.</strong>
                                         </p>
                                         <p className="text-sm font-semibold text-amber-900 mt-2">
-                                            Deadline: {inventoryPlan.summary.orderDeadline}
+                                            {inventoryPlan.summary.orderDeadline}
                                         </p>
                                     </div>
                                 </div>
@@ -1123,6 +1512,9 @@
                                                 <span className="text-lg text-orange-900">${formatNumber(inventoryPlan.customShape.totalCost)}</span>
                                             </div>
                                         </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.customShape.orderTiming}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1146,6 +1538,9 @@
                                                 <span>Total Cost:</span>
                                                 <span className="text-lg text-blue-900">${formatNumber(inventoryPlan.fixedShape.totalCost)}</span>
                                             </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.fixedShape.orderTiming}
                                         </div>
                                     </div>
                                 </div>
@@ -1171,6 +1566,9 @@
                                                 <span className="text-lg text-purple-900">${formatNumber(inventoryPlan.sublimation.totalCost)}</span>
                                             </div>
                                         </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.sublimation.orderTiming}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1194,6 +1592,9 @@
                                                 <span>Total Cost:</span>
                                                 <span className="text-lg text-green-900">${formatNumber(inventoryPlan.apparel.totalCost)}</span>
                                             </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.apparel.orderTiming}
                                         </div>
                                     </div>
                                 </div>
@@ -1219,6 +1620,9 @@
                                                 <span className="text-lg text-cyan-900">${formatNumber(inventoryPlan.paper.totalCost)}</span>
                                             </div>
                                         </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            {inventoryPlan.paper.orderTiming}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1239,7 +1643,7 @@
                                         </div>
                                         <div className="bg-white rounded p-3">
                                             <p className="text-xs text-gray-700">Based on {current.name} production volume</p>
-                                            <p className="text-xs text-gray-700 mt-1">Order deadline for next season: {inventoryPlan.summary.orderDeadline.split('for')[0]}</p>
+                                            <p className="text-xs text-gray-700 mt-1">Order deadline: {inventoryPlan.summary.orderDeadline}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1433,6 +1837,102 @@
                                             <li>• <strong>Storage management:</strong> Proper warehousing for 150 days of inventory</li>
                                         </ul>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sensitivity Analysis */}
+                        <div className="glass-card p-6 md-p-8 mb-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 text-indigo-600"><Icons.BarChart /></div>
+                                <h2 className="text-xl text-2xl font-bold text-gray-800">📊 Sensitivity Analysis - {current.name}</h2>
+                            </div>
+
+                            <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                                <h3 className="font-bold text-blue-900 mb-3">Base Scenario</h3>
+                                <div className="grid grid-cols-2 md-grid-cols-4 gap-4">
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Base Net Profit</p>
+                                        <p className={`text-xl font-bold ${getColorClass(sensitivityAnalysis.baseNetProfit)}`}>
+                                            {formatCurrency(sensitivityAnalysis.baseNetProfit)}
+                                        </p>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Net Margin</p>
+                                        <p className="text-xl font-bold text-blue-900">{netMargin}%</p>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Break-even Days</p>
+                                        <p className="text-xl font-bold text-purple-900">{breakEvenDays.toFixed(1)} days</p>
+                                    </div>
+                                    <div className="bg-white rounded p-3">
+                                        <p className="text-sm text-gray-600 mb-1">Daily Production</p>
+                                        <p className="text-xl font-bold text-green-900">{calculations.totalUnitsPerDay.toLocaleString()}/day</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="overflow-x-auto">
+                                <table className="sensitivity-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Variable</th>
+                                            <th>Change</th>
+                                            <th>Net Profit</th>
+                                            <th>Profit Change</th>
+                                            <th>Impact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sensitivityAnalysis.scenarios.map((scenario, index) => (
+                                            <tr key={index}>
+                                                <td className="font-semibold">{scenario.variable}</td>
+                                                <td className={scenario.change.includes('-') ? 'negative' : scenario.change === '0%' ? 'neutral' : 'positive'}>
+                                                    {scenario.change}
+                                                </td>
+                                                <td className={scenario.netProfit > 0 ? 'positive' : 'negative'}>
+                                                    {formatCurrency(scenario.netProfit)}
+                                                </td>
+                                                <td className={scenario.profitChange.includes('-') ? 'negative' : scenario.profitChange === '0.0' ? 'neutral' : 'positive'}>
+                                                    {scenario.profitChange}%
+                                                </td>
+                                                <td>
+                                                    {Math.abs(parseFloat(scenario.profitChange)) > 20 ? '🔴 High' : 
+                                                     Math.abs(parseFloat(scenario.profitChange)) > 10 ? '🟡 Medium' : '🟢 Low'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="mt-6 grid md-grid-cols-3 gap-4">
+                                <div className="p-4 bg-green-50 rounded-lg">
+                                    <h4 className="font-bold text-green-900 mb-2">Key Insights</h4>
+                                    <ul className="text-sm text-gray-700 space-y-1">
+                                        <li>• Price changes have the <strong>largest impact</strong> on profitability</li>
+                                        <li>• Material costs are the <strong>most sensitive</strong> cost component</li>
+                                        <li>• Volume changes affect both revenue and operating costs</li>
+                                        <li>• Break-even is most sensitive to <strong>price and material costs</strong></li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-amber-50 rounded-lg">
+                                    <h4 className="font-bold text-amber-900 mb-2">Risk Assessment</h4>
+                                    <ul className="text-sm text-gray-700 space-y-1">
+                                        <li>• <strong>High risk:</strong> Material cost increases above 5%</li>
+                                        <li>• <strong>Medium risk:</strong> Price decreases above 5%</li>
+                                        <li>• <strong>Low risk:</strong> Volume fluctuations within 10%</li>
+                                        <li>• <strong>Critical:</strong> Rent increases above $3/sqft/month</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-lg">
+                                    <h4 className="font-bold text-blue-900 mb-2">Recommendations</h4>
+                                    <ul className="text-sm text-gray-700 space-y-1">
+                                        <li>• <strong>Hedge material costs</strong> with long-term contracts</li>
+                                        <li>• <strong>Maintain price discipline</strong> - avoid discounts >5%</li>
+                                        <li>• <strong>Focus on volume growth</strong> to spread fixed costs</li>
+                                        <li>• <strong>Monitor rent costs</strong> - consider relocation if >$3.5/sqft</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
